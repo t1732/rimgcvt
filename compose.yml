@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    init: true
+    tty: true
+    stdin_open: true    
+    environment:
+      - DISPLAY=host.docker.internal:0    
+    ports:
+      - "1420:1420"
+      - "1430:1430"
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+        consistency: delegated
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        consistency: delegated
