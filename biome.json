@@ -1,0 +1,81 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      ".vscode/extensions.json",
+      ".vscode/settings.json",
+      "biome.json",
+      "components.json",
+      "postcss.config.js",
+      "tailwind.config.js",
+      "tsconfig.json",
+      "tsconfig.node.json",
+      "vite.config.ts",
+      "src/**/*.{ts,tsx,css}"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noUnknownAtRules": {
+          "level": "warn",
+          "options": {
+            "ignore": ["tailwind"]
+          }
+        }
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "tailwindDirectives": true
+    },
+    "linter": {
+      "enabled": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              { "type": false, "source": ["react*", "react/**"] },
+              { "type": false, "source": ":NODE:" },
+              { "type": false, "source": ":PACKAGE:" },
+              ":BLANK_LINE:",
+
+              { "type": false },
+              ":BLANK_LINE:",
+
+              { "type": true }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

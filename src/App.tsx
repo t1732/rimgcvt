@@ -1,8 +1,8 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/core";
 
 import { Button } from "@/components/ui/button";
+import reactLogo from "./assets/react.svg";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -18,17 +18,31 @@ function App() {
       <h1 className="text-4xl font-bold mb-8">Welcome to Tauri + React</h1>
 
       <div className="flex gap-4 mb-8">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="w-24 h-24 hover:drop-shadow-[0_0_2em_#646cffaa] transition-all" alt="Vite logo" />
+        <a href="https://vite.dev" target="_blank" rel="noopener">
+          <img
+            src="/vite.svg"
+            className="w-24 h-24 hover:drop-shadow-[0_0_2em_#646cffaa] transition-all"
+            alt="Vite logo"
+          />
         </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="w-24 h-24 hover:drop-shadow-[0_0_2em_#24c8dbff] transition-all" alt="Tauri logo" />
+        <a href="https://tauri.app" target="_blank" rel="noopener">
+          <img
+            src="/tauri.svg"
+            className="w-24 h-24 hover:drop-shadow-[0_0_2em_#24c8dbff] transition-all"
+            alt="Tauri logo"
+          />
         </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="w-24 h-24 hover:drop-shadow-[0_0_2em_#61dafbaa] transition-all animate-[spin_20s_linear_infinite]" alt="React logo" />
+        <a href="https://react.dev" target="_blank" rel="noopener">
+          <img
+            src={reactLogo}
+            className="w-24 h-24 hover:drop-shadow-[0_0_2em_#61dafbaa] transition-all animate-[spin_20s_linear_infinite]"
+            alt="React logo"
+          />
         </a>
       </div>
-      <p className="mb-8 text-muted-foreground text-center">Click on the Tauri, Vite, and React logos to learn more.</p>
+      <p className="mb-8 text-muted-foreground text-center">
+        Click on the Tauri, Vite, and React logos to learn more.
+      </p>
 
       <form
         className="flex gap-2"
