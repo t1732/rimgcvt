@@ -2,9 +2,17 @@ import { useState } from "react";
 
 import { DropZone } from "@/components/DropZone";
 import { FileItem } from "@/components/FileItem";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const HomePage = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [targetFormat, setTargetFormat] = useState("webp");
 
   const handleFilesSelected = (fileList: FileList) => {
     const files = Array.from(fileList);
@@ -27,13 +35,36 @@ export const HomePage = () => {
         <DropZone onFilesSelected={handleFilesSelected} />
 
         {selectedFiles.length > 0 && (
-          <div className="mt-8 space-y-4">
-            <h3 className="text-lg font-semibold">
-              Selected Files ({selectedFiles.length})
-            </h3>
+          <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex items-center justify-between border-b pb-4">
+              <h3 className="text-lg font-semibold">
+                Selected Files ({selectedFiles.length})
+              </h3>
+              <div className="flex items-center gap-3 bg-muted/50 p-1.5 px-3 rounded-lg border">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Convert to
+                </span>
+                <Select value={targetFormat} onValueChange={setTargetFormat}>
+                  <SelectTrigger className="w-[110px] h-9 bg-background">
+                    <SelectValue placeholder="Format" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="webp">WEBP</SelectItem>
+                    <SelectItem value="png">PNG</SelectItem>
+                    <SelectItem value="jpg">JPG</SelectItem>
+                    <SelectItem value="heic">HEIC</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-2">
               {selectedFiles.map((file, i) => (
-                <FileItem key={`${file.name}-${i}`} file={file} />
+                <FileItem
+                  key={`${file.name}-${i}`}
+                  file={file}
+                  targetFormat={targetFormat}
+                />
               ))}
             </div>
           </div>
