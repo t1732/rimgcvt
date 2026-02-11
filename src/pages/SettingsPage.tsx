@@ -1,4 +1,4 @@
-import { FolderOpen } from "lucide-react";
+import { FolderOpen, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSettings } from "@/contexts/SettingsContext";
 
 export const SettingsPage = () => {
@@ -18,19 +24,22 @@ export const SettingsPage = () => {
 
   const handleSelectFolder = async () => {
     try {
-      // TODO: Implement Tauri dialog when ready
-      // const { open } = await import('@tauri-apps/plugin-dialog');
-      // const selected = await open({
-      //   directory: true,
-      //   multiple: false,
-      // });
-      // if (selected) {
-      //   updateSettings({ outputPath: selected });
-      // }
-      console.log("Folder selection not yet implemented");
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const selected = await open({
+        directory: true,
+        multiple: false,
+        defaultPath: settings.outputPath,
+      });
+      if (selected) {
+        updateSettings({ outputPath: selected });
+      }
     } catch (error) {
       console.error("Failed to open folder dialog:", error);
     }
+  };
+
+  const handleResetPath = () => {
+    updateSettings({ outputPath: "" });
   };
 
   return (
@@ -93,13 +102,37 @@ export const SettingsPage = () => {
                   placeholder="Select output folder..."
                   className="flex-1"
                 />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleSelectFolder}
-                >
-                  <FolderOpen className="h-4 w-4" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleSelectFolder}
+                      >
+                        <FolderOpen className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Select folder</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleResetPath}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reset to default</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </CardContent>
           </Card>
