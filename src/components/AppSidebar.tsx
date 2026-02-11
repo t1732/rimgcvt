@@ -18,7 +18,7 @@ interface AppSidebarProps {
   currentPage: Page;
 }
 
-export function AppSidebar({ onNavigate, currentPage }: AppSidebarProps) {
+export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
   return (
     <Sidebar>
       <SidebarHeader>
@@ -56,4 +56,4 @@ export function AppSidebar({ onNavigate, currentPage }: AppSidebarProps) {
       <SidebarFooter />
     </Sidebar>
   );
-}
+};

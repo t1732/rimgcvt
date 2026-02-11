@@ -4,7 +4,7 @@ interface FileItemProps {
   file: File;
 }
 
-export function FileItem({ file }: FileItemProps) {
+export const FileItem = ({ file }: FileItemProps) => {
   const [thumbnail, setThumbnail] = useState<string>("");
 
   useEffect(() => {
@@ -37,4 +37,4 @@ export function FileItem({ file }: FileItemProps) {
       </span>
     </div>
   );
-}
+};

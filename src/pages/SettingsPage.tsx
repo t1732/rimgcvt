@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useSettings } from "@/contexts/SettingsContext";
 
-export function SettingsPage() {
+export const SettingsPage = () => {
   const { settings, updateSettings } = useSettings();
 
   const handleSelectFolder = async () => {
@@ -156,4 +156,4 @@ export function SettingsPage() {
       </div>
     </div>
   );
-}
+};

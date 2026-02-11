@@ -2,7 +2,7 @@ import { type ReactNode, useEffect } from "react";
 
 import { useSettings } from "./SettingsContext";
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { settings } = useSettings();
 
   useEffect(() => {
@@ -28,4 +28,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [settings.theme]);
 
   return <>{children}</>;
-}
+};

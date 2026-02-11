@@ -9,7 +9,7 @@ interface DropZoneProps {
   onFilesSelected: (files: FileList) => void;
 }
 
-export function DropZone({ onFilesSelected }: DropZoneProps) {
+export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -101,4 +101,4 @@ export function DropZone({ onFilesSelected }: DropZoneProps) {
       </div>
     </div>
   );
-}
+};

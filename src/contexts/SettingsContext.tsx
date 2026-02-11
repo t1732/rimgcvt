@@ -34,7 +34,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(
   undefined,
 );
 
-export function SettingsProvider({ children }: { children: ReactNode }) {
+export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<Settings>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -64,12 +64,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       {children}
     </SettingsContext.Provider>
   );
-}
+};
 
-export function useSettings() {
+export const useSettings = () => {
   const context = useContext(SettingsContext);
   if (!context) {
     throw new Error("useSettings must be used within a SettingsProvider");
   }
   return context;
-}
+};

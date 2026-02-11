@@ -3,7 +3,7 @@ import { useState } from "react";
 import { DropZone } from "@/components/DropZone";
 import { FileItem } from "@/components/FileItem";
 
-export function HomePage() {
+export const HomePage = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const handleFilesSelected = (fileList: FileList) => {
@@ -41,4 +41,4 @@ export function HomePage() {
       </div>
     </div>
   );
-}
+};
