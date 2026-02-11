@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { isSameFormat as checkIsSameFormat } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
 interface FileItemProps {
@@ -17,10 +18,7 @@ export const FileItem = ({ file, targetFormat }: FileItemProps) => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
-  const extension = file.name.split(".").pop()?.toLowerCase();
-  const isSameFormat =
-    (targetFormat === "jpg" && (extension === "jpg" || extension === "jpeg")) ||
-    targetFormat === extension;
+  const isSameFormat = checkIsSameFormat(file.name, targetFormat);
 
   return (
     <div

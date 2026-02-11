@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Play } from "lucide-react";
 
 import { DropZone } from "@/components/DropZone";
 import { FileItem } from "@/components/FileItem";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { canConvert } from "@/lib/image";
 
 export const HomePage = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -18,6 +21,15 @@ export const HomePage = () => {
     const files = Array.from(fileList);
     setSelectedFiles((prev) => [...prev, ...files]);
     console.log("Files selected:", files);
+  };
+
+  const hasConvertibleFiles = selectedFiles.some((file) =>
+    canConvert(file, targetFormat),
+  );
+
+  const handleStartConversion = () => {
+    console.log("Starting conversion...");
+    // TODO: Implement conversion logic
   };
 
   return (
@@ -70,6 +82,37 @@ export const HomePage = () => {
           </div>
         )}
       </div>
+
+      {/* Spacer to prevent content from being hidden behind the floating bar */}
+      {hasConvertibleFiles && <div className="h-32 w-full shrink-0" />}
+
+      {/* Floating Bottom Action Bar */}
+      {hasConvertibleFiles && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out">
+          <div className="bg-background/80 backdrop-blur-xl border border-primary/20 p-2 pl-6 rounded-full shadow-2xl flex items-center gap-6 ring-1 ring-black/5">
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground leading-none mb-1">
+                Ready to convert
+              </span>
+              <span className="text-sm font-semibold leading-none">
+                {
+                  selectedFiles.filter((f) => canConvert(f, targetFormat))
+                    .length
+                }{" "}
+                files
+              </span>
+            </div>
+            <Button
+              size="lg"
+              className="rounded-full px-8 gap-2 font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-105 active:scale-95 h-12"
+              onClick={handleStartConversion}
+            >
+              <Play className="h-4 w-4 fill-current" />
+              Start Conversion
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
