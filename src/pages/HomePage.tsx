@@ -16,6 +16,13 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { canConvert } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
+interface ConversionResult {
+  source_path: string;
+  output_path: string | null;
+  success: boolean;
+  error: string | null;
+}
+
 export const HomePage = () => {
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [targetFormat, setTargetFormat] = useState("webp");
@@ -25,6 +32,11 @@ export const HomePage = () => {
 
   const handleFilesSelected = (files: SelectedFile[]) => {
     setSelectedFiles((prev) => [...prev, ...files]);
+    setIsComplete(false);
+  };
+
+  const handleReset = () => {
+    setSelectedFiles([]);
     setIsComplete(false);
   };
 
@@ -38,27 +50,70 @@ export const HomePage = () => {
     setIsConverting(true);
     setIsComplete(false);
 
+    // Initialize status for all convertible files
+    setSelectedFiles((prev) =>
+      prev.map((f) =>
+        canConvert(f, targetFormat) ? { ...f, status: "idle" } : f,
+      ),
+    );
+
     try {
       const convertibleFiles = selectedFiles.filter((f) =>
         canConvert(f, targetFormat),
       );
-      const paths = convertibleFiles.map((f) => f.path);
 
-      const results = await invoke("convert_images", {
-        paths,
-        targetFormat,
-        settings: {
-          output_path: settings.outputPath,
-          file_prefix: settings.filePrefix,
-          conflict_resolution: settings.conflictResolution,
-        },
-      });
+      for (let i = 0; i < convertibleFiles.length; i++) {
+        const file = convertibleFiles[i];
 
-      console.log("Conversion results:", results);
+        // Update status to converting
+        setSelectedFiles((prev) =>
+          prev.map((f) =>
+            f.path === file.path ? { ...f, status: "converting" } : f,
+          ),
+        );
+
+        try {
+          // We use the same 'convert_images' but with a single path to reuse the backend
+          // and get per-file feedback easily on the frontend.
+          const results = (await invoke("convert_images", {
+            paths: [file.path],
+            targetFormat,
+            settings: {
+              output_path: settings.outputPath,
+              file_prefix: settings.filePrefix,
+              conflict_resolution: settings.conflictResolution,
+            },
+          })) as ConversionResult[];
+
+          const result = results[0];
+
+          // Update status based on result
+          setSelectedFiles((prev) =>
+            prev.map((f) =>
+              f.path === file.path
+                ? {
+                    ...f,
+                    status: result.success ? "success" : "error",
+                    error: result.error,
+                  }
+                : f,
+            ),
+          );
+        } catch (error) {
+          console.error(`Failed to convert ${file.name}:`, error);
+          setSelectedFiles((prev) =>
+            prev.map((f) =>
+              f.path === file.path
+                ? { ...f, status: "error", error: String(error) }
+                : f,
+            ),
+          );
+        }
+      }
+
       setIsComplete(true);
-      // Optional: Clear selection or show results
     } catch (error) {
-      console.error("Conversion failed:", error);
+      console.error("Conversion batch failed:", error);
     } finally {
       setIsConverting(false);
     }
@@ -76,7 +131,10 @@ export const HomePage = () => {
           </p>
         </div>
 
-        <DropZone onFilesSelected={handleFilesSelected} />
+        <DropZone
+          onFilesSelected={handleFilesSelected}
+          disabled={isConverting}
+        />
 
         {selectedFiles.length > 0 && (
           <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -144,8 +202,8 @@ export const HomePage = () => {
                   ? "bg-sushi-500 hover:bg-sushi-600 shadow-sushi-500/25 hover:shadow-sushi-500/40"
                   : "shadow-primary/25 hover:shadow-primary/40",
               )}
-              onClick={handleStartConversion}
-              disabled={isConverting || (isComplete && !hasConvertibleFiles)}
+              onClick={isComplete ? handleReset : handleStartConversion}
+              disabled={isConverting || (!isComplete && !hasConvertibleFiles)}
             >
               {isConverting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
