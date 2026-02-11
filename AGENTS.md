@@ -21,7 +21,7 @@
 
 ### 開発ツール
 - **リンター/フォーマッター**: Biome 2.3.13
-- **パッケージマネージャー**: Bun (mise.tomlで設定)
+- **パッケージマネージャー**: Bun (mise.tomlで設定)。ツールの実行には `npx` ではなく `bunx` を使用してください。
 
 ## プロジェクト構造
 
@@ -289,6 +289,9 @@ export function MyComponent({ prop1, prop2 }: MyComponentProps) {
    - Props型: `{ComponentName}Props`
    - フック: `use{Name}`（camelCase）
    - ユーティリティ関数: camelCase
+
+5. **ツールの実行**
+   - パッケージの実行には `npx` ではなく `bunx` を使用してください。
 
 ## 現在の制限事項 & TODO
 
