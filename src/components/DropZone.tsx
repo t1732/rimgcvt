@@ -1,13 +1,31 @@
 import { useCallback, useState } from "react";
-import { FileCode, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface DropZoneProps {
   onFilesSelected: (files: FileList) => void;
 }
+
+const filterImageFiles = (files: FileList | null): File[] => {
+  if (!files) return [];
+  return Array.from(files).filter((file) => file.type.startsWith("image/"));
+};
+
+const handleFiles = (
+  files: FileList | null,
+  onFilesSelected: (files: FileList) => void,
+) => {
+  const imageFiles = filterImageFiles(files);
+  if (imageFiles.length > 0) {
+    const dt = new DataTransfer();
+    for (const file of imageFiles) {
+      dt.items.add(file);
+    }
+    onFilesSelected(dt.files);
+  }
+};
 
 export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -29,29 +47,13 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
-
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        // Filter to keep only image files
-        const imageFiles = Array.from(e.dataTransfer.files).filter((file) =>
-          file.type.startsWith("image/"),
-        );
-
-        if (imageFiles.length > 0) {
-          const dt = new DataTransfer();
-          for (const file of imageFiles) {
-            dt.items.add(file);
-          }
-          onFilesSelected(dt.files);
-        }
-      }
+      handleFiles(e.dataTransfer.files, onFilesSelected);
     },
     [onFilesSelected],
   );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      onFilesSelected(e.target.files);
-    }
+    handleFiles(e.target.files, onFilesSelected);
   };
 
   return (
@@ -73,7 +75,9 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
             <Upload className="h-8 w-8" />
           </div>
           <div className="space-y-1">
-            <p className="text-xl font-semibold">Drop images here</p>
+            <p className="text-xl font-semibold">
+              Drop images here or click to select
+            </p>
             <p className="text-sm text-muted-foreground">
               PNG, JPG, WEBP, GIF, etc.
             </p>
@@ -81,24 +85,14 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
         </div>
       </Card>
 
-      <div className="flex justify-center">
-        <input
-          id="file-input"
-          type="file"
-          className="hidden"
-          multiple
-          accept="image/*"
-          onChange={handleFileSelect}
-        />
-        <Button
-          variant="outline"
-          className="gap-2"
-          onClick={() => document.getElementById("file-input")?.click()}
-        >
-          <FileCode className="h-4 w-4" />
-          Select Images
-        </Button>
-      </div>
+      <input
+        id="file-input"
+        type="file"
+        className="hidden"
+        multiple
+        accept="image/*"
+        onChange={handleFileSelect}
+      />
     </div>
   );
 };
