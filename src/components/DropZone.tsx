@@ -8,9 +8,33 @@ interface DropZoneProps {
   onFilesSelected: (files: FileList) => void;
 }
 
+const SUPPORTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+];
+
+const SUPPORTED_IMAGE_EXTENSIONS = [
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".heic",
+  ".heif",
+];
+
 const filterImageFiles = (files: FileList | null): File[] => {
   if (!files) return [];
-  return Array.from(files).filter((file) => file.type.startsWith("image/"));
+  return Array.from(files).filter((file) => {
+    // Check by MIME type
+    if (SUPPORTED_IMAGE_TYPES.includes(file.type)) return true;
+
+    // Check by extension (fallback for files with missing or generic MIME types)
+    const extension = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
+    return SUPPORTED_IMAGE_EXTENSIONS.includes(extension);
+  });
 };
 
 const handleFiles = (
@@ -79,7 +103,7 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
               Drop images here or click to select
             </p>
             <p className="text-sm text-muted-foreground">
-              PNG, JPG, WEBP, GIF, etc.
+              JPG, PNG, WEBP, HEIC
             </p>
           </div>
         </div>
@@ -90,7 +114,7 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
         type="file"
         className="hidden"
         multiple
-        accept="image/*"
+        accept={SUPPORTED_IMAGE_EXTENSIONS.join(",")}
         onChange={handleFileSelect}
       />
     </div>
