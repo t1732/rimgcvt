@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 
 import { AppSidebar } from "@/components/AppSidebar";
+import { DropZone } from "@/components/DropZone";
+import { FileItem } from "@/components/FileItem";
 import { Header } from "@/components/Header";
-import { Button } from "@/components/ui/button";
 import {
   SidebarInset,
   SidebarProvider,
@@ -11,12 +11,12 @@ import {
 } from "@/components/ui/sidebar";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  const greet = async () => {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
+  const handleFilesSelected = (fileList: FileList) => {
+    const files = Array.from(fileList);
+    setSelectedFiles((prev) => [...prev, ...files]);
+    console.log("Files selected:", files);
   };
 
   return (
@@ -27,23 +27,32 @@ function App() {
           <SidebarTrigger className="-ml-1" />
           <Header />
         </header>
-        <main className="container mx-auto p-4 flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-          <form
-            className="flex gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              greet();
-            }}
-          >
-            <input
-              id="greet-input"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-              onChange={(e) => setName(e.currentTarget.value)}
-              placeholder="Enter a name..."
-            />
-            <Button type="submit">Greet</Button>
-          </form>
-          <p className="mt-4 font-medium">{greetMsg}</p>
+        <main className="container mx-auto p-8 flex flex-col items-center min-h-[calc(100vh-4rem)]">
+          <div className="w-full max-w-4xl space-y-8">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight">
+                Convert your images
+              </h2>
+              <p className="text-muted-foreground">
+                Easy, fast and secure image conversion.
+              </p>
+            </div>
+
+            <DropZone onFilesSelected={handleFilesSelected} />
+
+            {selectedFiles.length > 0 && (
+              <div className="mt-8 space-y-4">
+                <h3 className="text-lg font-semibold">
+                  Selected Files ({selectedFiles.length})
+                </h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {selectedFiles.map((file, i) => (
+                    <FileItem key={`${file.name}-${i}`} file={file} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>
