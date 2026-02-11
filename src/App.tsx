@@ -1,61 +1,40 @@
 import { useState } from "react";
 
 import { AppSidebar } from "@/components/AppSidebar";
-import { DropZone } from "@/components/DropZone";
-import { FileItem } from "@/components/FileItem";
 import { Header } from "@/components/Header";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { SettingsProvider } from "@/contexts/SettingsContext";
+import { ThemeProvider } from "@/contexts/ThemeProvider";
+import { HomePage } from "@/pages/HomePage";
+import { SettingsPage } from "@/pages/SettingsPage";
+
+type Page = "home" | "settings";
 
 function App() {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-  const handleFilesSelected = (fileList: FileList) => {
-    const files = Array.from(fileList);
-    setSelectedFiles((prev) => [...prev, ...files]);
-    console.log("Files selected:", files);
-  };
+  const [currentPage, setCurrentPage] = useState<Page>("home");
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Header />
-        </header>
-        <main className="container mx-auto p-8 flex flex-col items-center min-h-[calc(100vh-4rem)]">
-          <div className="w-full max-w-4xl space-y-8">
-            <div className="text-center space-y-2">
-              <h2 className="text-3xl font-bold tracking-tight">
-                Convert your images
-              </h2>
-              <p className="text-muted-foreground">
-                Easy, fast and secure image conversion.
-              </p>
-            </div>
-
-            <DropZone onFilesSelected={handleFilesSelected} />
-
-            {selectedFiles.length > 0 && (
-              <div className="mt-8 space-y-4">
-                <h3 className="text-lg font-semibold">
-                  Selected Files ({selectedFiles.length})
-                </h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {selectedFiles.map((file, i) => (
-                    <FileItem key={`${file.name}-${i}`} file={file} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <SettingsProvider>
+      <ThemeProvider>
+        <SidebarProvider>
+          <AppSidebar onNavigate={setCurrentPage} currentPage={currentPage} />
+          <SidebarInset>
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Header />
+            </header>
+            <main>
+              {currentPage === "home" && <HomePage />}
+              {currentPage === "settings" && <SettingsPage />}
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
+      </ThemeProvider>
+    </SettingsProvider>
   );
 }
 

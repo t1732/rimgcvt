@@ -11,7 +11,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export function AppSidebar() {
+type Page = "home" | "settings";
+
+interface AppSidebarProps {
+  onNavigate: (page: Page) => void;
+  currentPage: Page;
+}
+
+export function AppSidebar({ onNavigate, currentPage }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarHeader>
@@ -26,19 +33,21 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="/">
-                  <Home />
-                  <span>Home</span>
-                </a>
+              <SidebarMenuButton
+                onClick={() => onNavigate("home")}
+                isActive={currentPage === "home"}
+              >
+                <Home />
+                <span>Home</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="/settings">
-                  <Settings />
-                  <span>Settings</span>
-                </a>
+              <SidebarMenuButton
+                onClick={() => onNavigate("settings")}
+                isActive={currentPage === "settings"}
+              >
+                <Settings />
+                <span>Settings</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
