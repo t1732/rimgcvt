@@ -5,6 +5,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-sushi-50: #f6fce9;
+  --color-sushi-100: #eaf7d0;
+  --color-sushi-200: #d7f0a6;
+  --color-sushi-300: #bbe472;
+  --color-sushi-400: #a0d546;
+  --color-sushi-500: #79ae25;
+  --color-sushi-600: #63941c;
+  --color-sushi-700: #4d711a;
+  --color-sushi-800: #3f5a1a;
+  --color-sushi-900: #364d1a;
+  --color-sushi-950: #1a2a09;
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
 
@@ -14,8 +26,8 @@
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
 
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: var(--color-sushi-600);
+  --color-primary-foreground: var(--color-sushi-50);
 
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
@@ -38,18 +50,6 @@
   --color-chart-3: hsl(var(--chart-3));
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
-
-  --color-sushi-50: #f6fce9;
-  --color-sushi-100: #eaf7d0;
-  --color-sushi-200: #d7f0a6;
-  --color-sushi-300: #bbe472;
-  --color-sushi-400: #a0d546;
-  --color-sushi-500: #79ae25;
-  --color-sushi-600: #63941c;
-  --color-sushi-700: #4d711a;
-  --color-sushi-800: #3f5a1a;
-  --color-sushi-900: #364d1a;
-  --color-sushi-950: #1a2a09;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -142,25 +142,25 @@
 }
 
 :root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: var(--color-sushi-50);
+  --sidebar-foreground: var(--color-sushi-900);
+  --sidebar-primary: var(--color-sushi-600);
+  --sidebar-primary-foreground: var(--color-sushi-50);
+  --sidebar-accent: var(--color-sushi-100);
+  --sidebar-accent-foreground: var(--color-sushi-700);
+  --sidebar-border: var(--color-sushi-200);
+  --sidebar-ring: var(--color-sushi-400);
 }
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: var(--color-sushi-950);
+  --sidebar-foreground: var(--color-sushi-100);
+  --sidebar-primary: var(--color-sushi-500);
+  --sidebar-primary-foreground: var(--color-sushi-950);
+  --sidebar-accent: var(--color-sushi-900);
+  --sidebar-accent-foreground: var(--color-sushi-200);
+  --sidebar-border: var(--color-sushi-800);
+  --sidebar-ring: var(--color-sushi-500);
 }
 
 @theme inline {
