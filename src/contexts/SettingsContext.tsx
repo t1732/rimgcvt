@@ -1,6 +1,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -55,9 +56,26 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [settings]);
 
-  const updateSettings = (updates: Partial<Settings>) => {
+  const updateSettings = useCallback((updates: Partial<Settings>) => {
     setSettings((prev) => ({ ...prev, ...updates }));
-  };
+  }, []);
+
+  useEffect(() => {
+    const initializeDefaultPath = async () => {
+      if (settings.outputPath === "") {
+        try {
+          const { pictureDir, join } = await import("@tauri-apps/api/path");
+          const picDir = await pictureDir();
+          const defaultPath = await join(picDir, "imgcvt");
+          updateSettings({ outputPath: defaultPath });
+        } catch (error) {
+          console.error("Failed to get picture directory:", error);
+        }
+      }
+    };
+
+    initializeDefaultPath();
+  }, [settings.outputPath, updateSettings]);
 
   return (
     <SettingsContext.Provider value={{ settings, updateSettings }}>
