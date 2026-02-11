@@ -1,23 +1,17 @@
-import { useEffect, useState } from "react";
+import { convertFileSrc } from "@tauri-apps/api/core";
 
 import { isSameFormat as checkIsSameFormat } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
+import type { SelectedFile } from "./DropZone";
+
 interface FileItemProps {
-  file: File;
+  file: SelectedFile;
   targetFormat: string;
 }
 
 export const FileItem = ({ file, targetFormat }: FileItemProps) => {
-  const [thumbnail, setThumbnail] = useState<string>("");
-
-  useEffect(() => {
-    const objectUrl = URL.createObjectURL(file);
-    setThumbnail(objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
-
+  const thumbnail = convertFileSrc(file.path);
   const isSameFormat = checkIsSameFormat(file.name, targetFormat);
 
   return (
@@ -31,15 +25,11 @@ export const FileItem = ({ file, targetFormat }: FileItemProps) => {
     >
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded border overflow-hidden bg-background shrink-0">
-          {thumbnail ? (
-            <img
-              src={thumbnail}
-              alt={file.name}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="h-full w-full bg-muted" />
-          )}
+          <img
+            src={thumbnail}
+            alt={file.name}
+            className="h-full w-full object-cover"
+          />
         </div>
         <div className="flex flex-col">
           <span
@@ -57,9 +47,11 @@ export const FileItem = ({ file, targetFormat }: FileItemProps) => {
           )}
         </div>
       </div>
-      <span className="text-xs text-muted-foreground whitespace-nowrap ml-4">
-        {(file.size / 1024).toFixed(1)} KB
-      </span>
+      {file.size > 0 && (
+        <span className="text-xs text-muted-foreground whitespace-nowrap ml-4">
+          {(file.size / 1024).toFixed(1)} KB
+        </span>
+      )}
     </div>
   );
 };

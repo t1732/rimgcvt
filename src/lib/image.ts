@@ -1,3 +1,5 @@
+import type { SelectedFile } from "@/components/DropZone";
+
 export const isSameFormat = (filename: string, targetFormat: string) => {
   const extension = filename.split(".").pop()?.toLowerCase();
   if (!extension) return false;
@@ -11,6 +13,6 @@ export const isSameFormat = (filename: string, targetFormat: string) => {
   return extension === normalizedTarget;
 };
 
-export const canConvert = (file: File, targetFormat: string) => {
+export const canConvert = (file: SelectedFile, targetFormat: string) => {
   return !isSameFormat(file.name, targetFormat);
 };

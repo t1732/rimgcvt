@@ -1,55 +1,22 @@
 import { useCallback, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 import { Upload } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-interface DropZoneProps {
-  onFilesSelected: (files: FileList) => void;
+export interface SelectedFile {
+  path: string;
+  name: string;
+  size: number;
 }
 
-const SUPPORTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/heic",
-  "image/heif",
-];
+interface DropZoneProps {
+  onFilesSelected: (files: SelectedFile[]) => void;
+}
 
-const SUPPORTED_IMAGE_EXTENSIONS = [
-  ".jpg",
-  ".jpeg",
-  ".png",
-  ".webp",
-  ".heic",
-  ".heif",
-];
-
-const filterImageFiles = (files: FileList | null): File[] => {
-  if (!files) return [];
-  return Array.from(files).filter((file) => {
-    // Check by MIME type
-    if (SUPPORTED_IMAGE_TYPES.includes(file.type)) return true;
-
-    // Check by extension (fallback for files with missing or generic MIME types)
-    const extension = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
-    return SUPPORTED_IMAGE_EXTENSIONS.includes(extension);
-  });
-};
-
-const handleFiles = (
-  files: FileList | null,
-  onFilesSelected: (files: FileList) => void,
-) => {
-  const imageFiles = filterImageFiles(files);
-  if (imageFiles.length > 0) {
-    const dt = new DataTransfer();
-    for (const file of imageFiles) {
-      dt.items.add(file);
-    }
-    onFilesSelected(dt.files);
-  }
-};
+const SUPPORTED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 
 export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -66,18 +33,48 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      handleFiles(e.dataTransfer.files, onFilesSelected);
-    },
-    [onFilesSelected],
-  );
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files, onFilesSelected);
+    // Note: Tauri's drag-drop-enabled is false in tauri.conf.json
+    // If we want to support browser-based drop but get paths,
+    // it's tricky since browser File objects don't have paths.
+    // However, we can use the dialog to select instead.
+    console.log("Drop event detected, but we need paths. Encouraging click.");
+  }, []);
+
+  const handleClick = async () => {
+    try {
+      const selected = await open({
+        multiple: true,
+        filters: [
+          {
+            name: "Images",
+            extensions: SUPPORTED_IMAGE_EXTENSIONS,
+          },
+        ],
+      });
+
+      if (Array.isArray(selected)) {
+        const files: SelectedFile[] = await Promise.all(
+          selected.map(async (path) => {
+            const metadata = (await invoke("get_file_metadata", {
+              path,
+            }).catch(() => ({ size: 0 }))) as { size: number };
+            return {
+              path,
+              name: path.split(/[/\\]/).pop() || "",
+              size: metadata.size,
+            };
+          }),
+        );
+        onFilesSelected(files);
+      }
+    } catch (error) {
+      console.error("Failed to open dialog:", error);
+    }
   };
 
   return (
@@ -92,31 +89,18 @@ export const DropZone = ({ onFilesSelected }: DropZoneProps) => {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => document.getElementById("file-input")?.click()}
+        onClick={handleClick}
       >
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="p-4 rounded-full bg-sushi-100 text-sushi-600">
             <Upload className="h-8 w-8" />
           </div>
           <div className="space-y-1">
-            <p className="text-xl font-semibold">
-              Drop images here or click to select
-            </p>
-            <p className="text-sm text-muted-foreground">
-              JPG, PNG, WEBP, HEIC
-            </p>
+            <p className="text-xl font-semibold">Click to select images</p>
+            <p className="text-sm text-muted-foreground">JPG, PNG, WEBP</p>
           </div>
         </div>
       </Card>
-
-      <input
-        id="file-input"
-        type="file"
-        className="hidden"
-        multiple
-        accept={SUPPORTED_IMAGE_EXTENSIONS.join(",")}
-        onChange={handleFileSelect}
-      />
     </div>
   );
 };
