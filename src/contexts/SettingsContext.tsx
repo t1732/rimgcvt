@@ -15,6 +15,7 @@ export interface Settings {
   outputPath: string;
   filePrefix: string;
   conflictResolution: ConflictResolution;
+  defaultQuality: number;
 }
 
 interface SettingsContextType {
@@ -27,6 +28,7 @@ const defaultSettings: Settings = {
   outputPath: "",
   filePrefix: "",
   conflictResolution: "numbering",
+  defaultQuality: 85,
 };
 
 const STORAGE_KEY = "rimgcvt-settings";

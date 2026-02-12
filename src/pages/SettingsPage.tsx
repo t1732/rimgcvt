@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
   TooltipContent,
@@ -183,6 +184,38 @@ export const SettingsPage = () => {
                   </Label>
                 </div>
               </RadioGroup>
+            </CardContent>
+          </Card>
+
+          {/* Conversion Quality */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Default Conversion Quality</CardTitle>
+              <CardDescription>
+                Set the default quality for lossy formats (1-100)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    Quality: {settings.defaultQuality}
+                  </span>
+                </div>
+                <Slider
+                  min={1}
+                  max={100}
+                  step={1}
+                  value={[settings.defaultQuality]}
+                  onValueChange={(value) => {
+                    updateSettings({ defaultQuality: value[0] });
+                  }}
+                  className="w-full"
+                />
+                <span className="text-sm text-muted-foreground block">
+                  Applied to JPEG format (WebP is currently lossless)
+                </span>
+              </div>
             </CardContent>
           </Card>
         </div>

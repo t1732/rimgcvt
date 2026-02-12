@@ -1,4 +1,3 @@
-use image::ImageFormat;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::fs;
@@ -16,6 +15,7 @@ pub struct ConversionSettings {
     pub output_path: String,
     pub file_prefix: String,
     pub conflict_resolution: ConflictResolution,
+    pub quality: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -66,14 +66,22 @@ pub fn convert_image(
         fs::create_dir_all(parent)?;
     }
 
-    let format = match format_ext {
-        "jpg" => ImageFormat::Jpeg,
-        "png" => ImageFormat::Png,
-        "webp" => ImageFormat::WebP,
-        _ => unreachable!(),
-    };
+    let file = fs::File::create(&output_path)?;
+    let mut writer = std::io::BufWriter::new(file);
 
-    img.save_with_format(&output_path, format)?;
+    match format_ext {
+        "jpg" => {
+            let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut writer, settings.quality);
+            encoder.encode_image(&img)?;
+        }
+        "webp" => {
+            img.write_to(&mut writer, image::ImageFormat::WebP)?;
+        }
+        "png" => {
+            img.write_to(&mut writer, image::ImageFormat::Png)?;
+        }
+        _ => unreachable!(),
+    }
 
     Ok(output_path.to_string_lossy().to_string())
 }
