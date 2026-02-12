@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { getVersion } from "@tauri-apps/api/app";
 import { Home, Image as ImageIcon, Settings } from "lucide-react";
 
 import {
@@ -19,6 +21,12 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
+  const [version, setVersion] = useState<string>("");
+
+  useEffect(() => {
+    getVersion().then(setVersion);
+  }, []);
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -53,7 +61,11 @@ export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <div className="px-4 py-4 text-xs text-muted-foreground font-medium opacity-50 border-t border-sidebar-border">
+          v{version}
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 };
