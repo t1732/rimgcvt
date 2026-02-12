@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { Home, Image as ImageIcon, Settings } from "lucide-react";
+import { Home, Image as ImageIcon, Scroll, Settings } from "lucide-react";
 
 import {
   Sidebar,
@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-type Page = "home" | "settings";
+type Page = "home" | "settings" | "license";
 
 interface AppSidebarProps {
   onNavigate: (page: Page) => void;
@@ -56,6 +56,15 @@ export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
               >
                 <Settings />
                 <span>Settings</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => onNavigate("license")}
+                isActive={currentPage === "license"}
+              >
+                <Scroll />
+                <span>License</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

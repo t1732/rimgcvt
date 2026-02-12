@@ -10,9 +10,10 @@ import {
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { ThemeProvider } from "@/contexts/ThemeProvider";
 import { HomePage } from "@/pages/HomePage";
+import { LicensePage } from "@/pages/LicensePage";
 import { SettingsPage } from "@/pages/SettingsPage";
 
-type Page = "home" | "settings";
+type Page = "home" | "settings" | "license";
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
@@ -30,6 +31,7 @@ function App() {
             <main>
               {currentPage === "home" && <HomePage />}
               {currentPage === "settings" && <SettingsPage />}
+              {currentPage === "license" && <LicensePage />}
             </main>
           </SidebarInset>
         </SidebarProvider>
