@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Check, ChevronDown, Loader2, Play, Settings2 } from "lucide-react";
+import { openPath } from "@tauri-apps/plugin-opener";
+import {
+  Check,
+  ChevronDown,
+  FolderOpen,
+  Loader2,
+  Play,
+  Settings2,
+} from "lucide-react";
 
 import { DropZone, type SelectedFile } from "@/components/DropZone";
 import { FileItem } from "@/components/FileItem";
@@ -18,6 +26,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSettings } from "@/contexts/SettingsContext";
 import { canConvert } from "@/lib/image";
 import { cn } from "@/lib/utils";
@@ -50,6 +64,19 @@ export const HomePage = () => {
   const handleReset = () => {
     setSelectedFiles([]);
     setIsComplete(false);
+  };
+
+  const handleOpenFolder = async () => {
+    console.log("Opening folder:", settings.outputPath);
+    if (!settings.outputPath) {
+      console.warn("Output path is empty");
+      return;
+    }
+    try {
+      await openPath(settings.outputPath);
+    } catch (error) {
+      console.error("Failed to open output folder:", error);
+    }
   };
 
   const hasConvertibleFiles = selectedFiles.some((file) =>
@@ -282,6 +309,26 @@ export const HomePage = () => {
                   ? "Done!"
                   : "Start Conversion"}
             </Button>
+
+            {isComplete && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="rounded-full h-12 w-12 border-primary/20 hover:bg-primary/5 shadow-lg shrink-0"
+                      onClick={handleOpenFolder}
+                    >
+                      <FolderOpen className="h-5 w-5 text-primary" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Open output folder</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </div>
       )}
