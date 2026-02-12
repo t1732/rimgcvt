@@ -11,18 +11,39 @@ interface Library {
 const libraries: Library[] = [
   {
     name: "React",
-    version: "19.1.0",
+    version: "19.2.0",
     license: "MIT",
     url: "https://react.dev/",
     description: "The library for web and native user interfaces.",
   },
   {
     name: "Tauri",
-    version: "2.0.0",
+    version: "2.10.2",
     license: "MIT / Apache-2.0",
     url: "https://tauri.app/",
     description:
       "Build an optimized, secure, and frontend-independent application for multi-platform deployment.",
+  },
+  {
+    name: "Vite",
+    version: "7.1.9",
+    license: "MIT",
+    url: "https://vite.dev/",
+    description: "Next generation frontend tooling.",
+  },
+  {
+    name: "Tauri Plugin Dialog",
+    version: "2.6.0",
+    license: "MIT / Apache-2.0",
+    url: "https://github.com/tauri-apps/plugins-workspace",
+    description: "Native system dialogs for Tauri.",
+  },
+  {
+    name: "Tauri Plugin Opener",
+    version: "2.5.3",
+    license: "MIT / Apache-2.0",
+    url: "https://github.com/tauri-apps/plugins-workspace",
+    description: "Open files and URLs with the default system application.",
   },
   {
     name: "Lucide React",

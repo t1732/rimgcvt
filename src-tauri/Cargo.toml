@@ -22,7 +22,7 @@ tauri = { version = "2", features = ["protocol-asset", "macos-private-api"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tauri-plugin-dialog = "2"
+tauri-plugin-dialog = "2.6.0"
 image = { version = "0.25.9", features = ["webp", "jpeg", "png"] }
 anyhow = "1.0.101"
 
