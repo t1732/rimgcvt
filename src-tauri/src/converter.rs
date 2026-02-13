@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::fs;
+use webpx::{Encoder, Unstoppable};
+
+use std::io::Write;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ConflictResolution {
@@ -75,7 +78,13 @@ pub fn convert_image(
             encoder.encode_image(&img)?;
         }
         "webp" => {
-            img.write_to(&mut writer, image::ImageFormat::WebP)?;
+            let rgba = img.to_rgba8();
+            let (width, height) = rgba.dimensions();
+            let encoder = Encoder::new_rgba(&rgba, width, height)
+                .quality(settings.quality as f32);
+
+            let webp_data = encoder.encode(Unstoppable)?;
+            writer.write_all(&webp_data)?;
         }
         "png" => {
             img.write_to(&mut writer, image::ImageFormat::Png)?;
