@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 use std::fs;
-use webpx::{Encoder, Unstoppable};
 use std::io::Write;
+use std::path::PathBuf;
+use webpx::{Encoder, Unstoppable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ConflictResolution {
@@ -54,10 +54,8 @@ pub fn convert_image(
     if let ConflictResolution::Numbering = settings.conflict_resolution {
         let mut count = 1;
         while output_path.exists() {
-            let numbered_filename = format!(
-                "{}{}_{}.{}",
-                settings.file_prefix, stem, count, format_ext
-            );
+            let numbered_filename =
+                format!("{}{}_{}.{}", settings.file_prefix, stem, count, format_ext);
             output_path = PathBuf::from(&settings.output_path).join(&numbered_filename);
             count += 1;
         }
@@ -73,14 +71,14 @@ pub fn convert_image(
 
     match format_ext {
         "jpg" => {
-            let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut writer, settings.quality);
+            let mut encoder =
+                image::codecs::jpeg::JpegEncoder::new_with_quality(&mut writer, settings.quality);
             encoder.encode_image(&img)?;
         }
         "webp" => {
             let rgba = img.to_rgba8();
             let (width, height) = rgba.dimensions();
-            let encoder = Encoder::new_rgba(&rgba, width, height)
-                .quality(settings.quality as f32);
+            let encoder = Encoder::new_rgba(&rgba, width, height).quality(settings.quality as f32);
 
             let webp_data = encoder.encode(Unstoppable)?;
             writer.write_all(&webp_data)?;
@@ -97,7 +95,8 @@ pub fn convert_image(
             let mut liq = imagequant::new();
             liq.set_max_colors(colors)?;
 
-            let rgba_vec: Vec<imagequant::RGBA> = rgba.pixels()
+            let rgba_vec: Vec<imagequant::RGBA> = rgba
+                .pixels()
                 .map(|p| imagequant::RGBA {
                     r: p[0],
                     g: p[1],
@@ -106,7 +105,13 @@ pub fn convert_image(
                 })
                 .collect();
 
-            let mut img_data = imagequant::Image::new(&liq, rgba_vec.into_boxed_slice(), width as usize, height as usize, 0.0)?;
+            let mut img_data = imagequant::Image::new(
+                &liq,
+                rgba_vec.into_boxed_slice(),
+                width as usize,
+                height as usize,
+                0.0,
+            )?;
             let mut res = liq.quantize(&mut img_data)?;
             res.set_dithering_level(0.5)?;
 
