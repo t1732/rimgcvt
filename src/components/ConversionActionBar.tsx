@@ -63,7 +63,7 @@ export const ConversionActionBar = ({
           </span>
         </div>
 
-        {!isComplete && targetFormat === "jpg" && (
+        {!isComplete && (targetFormat === "jpg" || targetFormat === "webp") && (
           <Popover>
             <PopoverTrigger asChild>
               <button
