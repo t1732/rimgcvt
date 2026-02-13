@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils";
 interface ConversionActionBarProps {
   isConverting: boolean;
   isComplete: boolean;
-  targetFormat: string;
   convertibleCount: number;
   localQuality: number;
   setLocalQuality: (value: number) => void;
@@ -38,7 +37,6 @@ interface ConversionActionBarProps {
 export const ConversionActionBar = ({
   isConverting,
   isComplete,
-  targetFormat,
   convertibleCount,
   localQuality,
   setLocalQuality,
@@ -63,7 +61,7 @@ export const ConversionActionBar = ({
           </span>
         </div>
 
-        {!isComplete && (targetFormat === "jpg" || targetFormat === "webp") && (
+        {!isComplete && (
           <Popover>
             <PopoverTrigger asChild>
               <button
@@ -87,7 +85,7 @@ export const ConversionActionBar = ({
             <PopoverContent className="w-64 p-4 shadow-xl border-primary/20 backdrop-blur-lg bg-background/95">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Conversion Quality</span>
+                  <span className="text-sm font-bold">Compression Level</span>
                   <span className="text-sm font-mono bg-muted px-2 py-0.5 rounded leading-none">
                     {localQuality}
                   </span>

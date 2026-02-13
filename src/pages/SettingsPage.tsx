@@ -213,7 +213,7 @@ export const SettingsPage = () => {
                   className="w-full"
                 />
                 <span className="text-sm text-muted-foreground block">
-                  Applied to lossy formats (JPEG, WebP)
+                  Applied to JPEG, WebP (quality), and PNG (color reduction)
                 </span>
               </div>
             </CardContent>
