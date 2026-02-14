@@ -33,6 +33,8 @@ interface QualitySettings {
   localQuality: number;
   defaultQuality: number;
   setLocalQuality: (value: number) => void;
+  isLossless: boolean;
+  setIsLossless: (value: boolean) => void;
 }
 
 interface ConversionActions {
@@ -60,10 +62,40 @@ export const ConversionActionBar = ({
   formatSettings,
 }: ConversionActionBarProps) => {
   const { isConverting, isComplete, convertibleCount } = conversionState;
-  const { localQuality, defaultQuality, setLocalQuality } = qualitySettings;
+  const {
+    localQuality,
+    defaultQuality,
+    setLocalQuality,
+    isLossless,
+    setIsLossless,
+  } = qualitySettings;
   const { onStartConversion, onReset, onOpenFolder } = actions;
   const { targetFormat, onTargetFormatChange } = formatSettings;
   const hasConvertibleFiles = convertibleCount > 0;
+  const qualityLabel = isLossless ? "Lossless" : localQuality;
+  const isLosslessDisabled = targetFormat === "jpg";
+  const losslessToggle = (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isLossless}
+      aria-disabled={isLosslessDisabled}
+      onClick={() => !isLosslessDisabled && setIsLossless(!isLossless)}
+      className={cn(
+        "h-5 w-9 rounded-full border border-primary/20 transition-colors",
+        isLossless ? "bg-sushi-500" : "bg-muted",
+        isLosslessDisabled && "opacity-50 cursor-not-allowed",
+      )}
+      disabled={isLosslessDisabled}
+    >
+      <span
+        className={cn(
+          "block h-4 w-4 rounded-full bg-background transition-transform",
+          isLossless ? "translate-x-4" : "translate-x-0.5",
+        )}
+      />
+    </button>
+  );
 
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out">
@@ -152,7 +184,7 @@ export const ConversionActionBar = ({
                     Quality
                   </span>
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-bold">{localQuality}</span>
+                    <span className="text-sm font-bold">{qualityLabel}</span>
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </div>
                 </div>
@@ -161,9 +193,25 @@ export const ConversionActionBar = ({
             <PopoverContent className="w-64 p-4 shadow-xl border-primary/20 backdrop-blur-lg bg-background/95">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold">Compression Level</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">Lossless</span>
+                    {isLosslessDisabled ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            {losslessToggle}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Lossless is not available for JPEG.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      losslessToggle
+                    )}
+                  </div>
                   <span className="text-sm font-mono bg-muted px-2 py-0.5 rounded leading-none">
-                    {localQuality}
+                    {qualityLabel}
                   </span>
                 </div>
                 <Slider
@@ -172,11 +220,13 @@ export const ConversionActionBar = ({
                   step={1}
                   value={[localQuality]}
                   onValueChange={(value) => setLocalQuality(value[0])}
-                  className="w-full"
+                  className={cn("w-full", isLossless && "opacity-50")}
+                  disabled={isLossless}
                 />
                 <p className="text-[10px] text-muted-foreground leading-tight">
-                  Adjusting here applies only to this conversion batch. Default
-                  is {defaultQuality}.
+                  {isLossless
+                    ? "Lossless conversion ignores the quality slider for this batch."
+                    : `Adjusting here applies only to this conversion batch. Default is ${defaultQuality}.`}
                 </p>
               </div>
             </PopoverContent>

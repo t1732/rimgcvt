@@ -24,6 +24,7 @@ export const HomePage = () => {
   const [isComplete, setIsComplete] = useState(false);
   const { settings } = useSettings();
   const [localQuality, setLocalQuality] = useState(settings.defaultQuality);
+  const [isLossless, setIsLossless] = useState(false);
   const { updateFileStatus, initializeConvertibleFiles } =
     useFileStatusManager(setSelectedFiles);
 
@@ -31,6 +32,12 @@ export const HomePage = () => {
   useEffect(() => {
     setLocalQuality(settings.defaultQuality);
   }, [settings.defaultQuality]);
+
+  useEffect(() => {
+    if (targetFormat === "jpg") {
+      setIsLossless(false);
+    }
+  }, [targetFormat]);
 
   const handleFilesSelected = (files: SelectedFile[]) => {
     setSelectedFiles((prev) => {
@@ -113,6 +120,7 @@ export const HomePage = () => {
               file_prefix: settings.filePrefix,
               conflict_resolution: settings.conflictResolution,
               quality: localQuality,
+              lossless: isLossless,
             },
           })) as ConversionResult[];
 
@@ -223,6 +231,8 @@ export const HomePage = () => {
               localQuality,
               defaultQuality: settings.defaultQuality,
               setLocalQuality,
+              isLossless,
+              setIsLossless,
             }}
             formatSettings={{
               targetFormat,
