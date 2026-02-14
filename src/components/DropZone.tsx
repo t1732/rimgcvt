@@ -5,6 +5,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { Upload } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
+import { useDuplicateDropPrevention } from "@/hooks/use-duplicate-drop-prevention";
 import { cn } from "@/lib/utils";
 
 export type FileStatus = "idle" | "converting" | "success" | "error";
@@ -51,7 +52,7 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const disabledRef = useRef(disabled ?? false);
   const onFilesSelectedRef = useRef(onFilesSelected);
-  const lastDropRef = useRef<{ key: string; at: number } | null>(null);
+  const { isDuplicate } = useDuplicateDropPrevention();
 
   useEffect(() => {
     disabledRef.current = disabled ?? false;
@@ -107,14 +108,10 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
               : [];
             if (paths.length === 0) return;
 
-            // Wry/Tauri can emit duplicate drop events on some platforms.
-            const key = paths.join("|");
-            const now = Date.now();
-            const lastDrop = lastDropRef.current;
-            if (lastDrop && lastDrop.key === key && now - lastDrop.at < 500) {
+            // Prevent duplicate drop events
+            if (isDuplicate(paths)) {
               return;
             }
-            lastDropRef.current = { key, at: now };
 
             const files = await resolvePathsToFiles(paths);
             if (files.length > 0) {
