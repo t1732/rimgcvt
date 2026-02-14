@@ -142,22 +142,31 @@ export const HomePage = () => {
     canConvert(f, targetFormat),
   ).length;
 
+  const hasFiles = selectedFiles.length > 0;
+
   return (
     <div className="container mx-auto p-8 flex flex-col items-center min-h-[calc(100vh-4rem)]">
       <div className="w-full max-w-4xl space-y-8">
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Convert your images
-          </h2>
-          <p className="text-muted-foreground">
-            Easy, fast and secure image conversion.
-          </p>
-        </div>
+        {!hasFiles && (
+          <div className="text-center space-y-2 animate-in fade-in slide-in-from-top-4 duration-500">
+            <h2 className="text-3xl font-bold tracking-tight">
+              Convert your images
+            </h2>
+            <p className="text-muted-foreground">
+              Easy, fast and secure image conversion.
+            </p>
+          </div>
+        )}
 
-        <DropZone
-          onFilesSelected={handleFilesSelected}
-          disabled={isConverting}
-        />
+        <div
+          className={`transition-all duration-500 ${hasFiles ? "scale-90 mb-0" : "scale-100"}`}
+        >
+          <DropZone
+            onFilesSelected={handleFilesSelected}
+            disabled={isConverting}
+            hasFiles={hasFiles}
+          />
+        </div>
 
         {selectedFiles.length > 0 && (
           <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">

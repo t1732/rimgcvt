@@ -44,6 +44,7 @@ export interface SelectedFile {
 interface DropZoneProps {
   onFilesSelected: (files: SelectedFile[]) => void;
   disabled?: boolean;
+  hasFiles?: boolean;
 }
 
 const SUPPORTED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
@@ -54,7 +55,11 @@ const isSupportedImagePath = (path: string) => {
   return SUPPORTED_IMAGE_EXTENSIONS.includes(extension);
 };
 
-export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
+export const DropZone = ({
+  onFilesSelected,
+  disabled,
+  hasFiles,
+}: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const disabledRef = useRef(disabled ?? false);
   const onFilesSelectedRef = useRef(onFilesSelected);
@@ -172,7 +177,8 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
     >
       <Card
         className={cn(
-          "relative flex flex-col items-center justify-center p-12 border-2 border-dashed transition-colors duration-200 ease-in-out",
+          "relative flex flex-col items-center justify-center border-2 border-dashed transition-all duration-500 ease-in-out",
+          hasFiles ? "p-6" : "p-12",
           !disabled && "cursor-pointer",
           isDragging && !disabled
             ? "border-sushi-500 bg-sushi-50/50"
@@ -183,12 +189,34 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
         onDrop={!disabled ? handleDrop : undefined}
         onClick={!disabled ? handleClick : undefined}
       >
-        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-          <div className="p-4 rounded-full bg-sushi-100 text-sushi-600">
-            <Upload className="h-8 w-8" />
+        <div
+          className={cn(
+            "flex flex-col items-center justify-center text-center transition-all duration-500",
+            hasFiles ? "space-y-2" : "space-y-4",
+          )}
+        >
+          <div
+            className={cn(
+              "rounded-full bg-sushi-100 text-sushi-600 transition-all duration-500",
+              hasFiles ? "p-2" : "p-4",
+            )}
+          >
+            <Upload
+              className={cn(
+                "transition-all duration-500",
+                hasFiles ? "h-5 w-5" : "h-8 w-8",
+              )}
+            />
           </div>
           <div className="space-y-1">
-            <p className="text-xl font-semibold">Click to select images</p>
+            <p
+              className={cn(
+                "font-semibold transition-all duration-500",
+                hasFiles ? "text-base" : "text-xl",
+              )}
+            >
+              Click to select images
+            </p>
             <p className="text-sm text-muted-foreground">JPG, PNG, WEBP</p>
           </div>
         </div>
