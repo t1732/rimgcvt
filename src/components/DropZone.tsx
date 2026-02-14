@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Upload } from "lucide-react";
 
@@ -25,6 +26,93 @@ const SUPPORTED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 
 export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const disabledRef = useRef(disabled ?? false);
+  const onFilesSelectedRef = useRef(onFilesSelected);
+  const lastDropRef = useRef<{ key: string; at: number } | null>(null);
+
+  useEffect(() => {
+    disabledRef.current = disabled ?? false;
+  }, [disabled]);
+
+  useEffect(() => {
+    onFilesSelectedRef.current = onFilesSelected;
+  }, [onFilesSelected]);
+
+  const resolvePathsToFiles = useCallback(async (paths: string[]) => {
+    const files: SelectedFile[] = await Promise.all(
+      paths.map(async (path) => {
+        const metadata = (await invoke("get_file_metadata", {
+          path,
+        }).catch(() => ({ size: 0 }))) as { size: number };
+        return {
+          path,
+          name: path.split(/[/\\]/).pop() || "",
+          size: metadata.size,
+        };
+      }),
+    );
+
+    return files;
+  }, []);
+
+  useEffect(() => {
+    let unlistenDragDrop: (() => void) | undefined;
+
+    const setupListeners = async () => {
+      unlistenDragDrop = await getCurrentWindow().onDragDropEvent(
+        async (event) => {
+          const normalized = ((
+            event as { payload?: { type?: string; paths?: string[] } }
+          ).payload ?? (event as { type?: string; paths?: string[] })) as {
+            type?: string;
+            paths?: string[];
+          };
+
+          if (normalized.type === "over") {
+            if (!disabledRef.current) {
+              setIsDragging(true);
+            }
+            return;
+          }
+
+          if (normalized.type === "cancel") {
+            setIsDragging(false);
+            return;
+          }
+
+          if (normalized.type === "drop") {
+            setIsDragging(false);
+            if (disabledRef.current) return;
+
+            const paths = Array.isArray(normalized.paths)
+              ? normalized.paths
+              : [];
+            if (paths.length === 0) return;
+
+            // Wry/Tauri can emit duplicate drop events on some platforms.
+            const key = paths.join("|");
+            const now = Date.now();
+            const lastDrop = lastDropRef.current;
+            if (lastDrop && lastDrop.key === key && now - lastDrop.at < 500) {
+              return;
+            }
+            lastDropRef.current = { key, at: now };
+
+            const files = await resolvePathsToFiles(paths);
+            if (files.length > 0) {
+              onFilesSelectedRef.current(files);
+            }
+          }
+        },
+      );
+    };
+
+    setupListeners();
+
+    return () => {
+      unlistenDragDrop?.();
+    };
+  }, [resolvePathsToFiles]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -38,17 +126,15 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    // Note: Tauri's drag-drop-enabled is false in tauri.conf.json
-    // If we want to support browser-based drop but get paths,
-    // it's tricky since browser File objects don't have paths.
-    // However, we can use the dialog to select instead.
-    console.log("Drop event detected, but we need paths. Encouraging click.");
-  }, []);
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      if (disabled) return;
+    },
+    [disabled],
+  );
 
   const handleClick = async () => {
     try {
@@ -63,18 +149,7 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
       });
 
       if (Array.isArray(selected)) {
-        const files: SelectedFile[] = await Promise.all(
-          selected.map(async (path) => {
-            const metadata = (await invoke("get_file_metadata", {
-              path,
-            }).catch(() => ({ size: 0 }))) as { size: number };
-            return {
-              path,
-              name: path.split(/[/\\]/).pop() || "",
-              size: metadata.size,
-            };
-          }),
-        );
+        const files = await resolvePathsToFiles(selected);
         onFilesSelected(files);
       }
     } catch (error) {
