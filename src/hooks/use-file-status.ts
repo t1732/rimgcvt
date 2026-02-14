@@ -26,7 +26,10 @@ export const useFileStatusManager = (
   );
 
   const initializeConvertibleFiles = useCallback(
-    (targetFormat: string, canConvert: (file: SelectedFile, format: string) => boolean) => {
+    (
+      targetFormat: string,
+      canConvert: (file: SelectedFile, format: string) => boolean,
+    ) => {
       setSelectedFiles((prev) =>
         prev.map((f) =>
           canConvert(f, targetFormat) ? { ...f, status: "idle" } : f,
