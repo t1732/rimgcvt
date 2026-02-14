@@ -29,10 +29,10 @@ export const HomePage = () => {
   const { settings } = useSettings();
   const [localQuality, setLocalQuality] = useState(settings.defaultQuality);
 
-  // Sync local quality with settings initially or when format changes to help user
-  useState(() => {
+  // Sync local quality with settings when default changes
+  useEffect(() => {
     setLocalQuality(settings.defaultQuality);
-  });
+  }, [settings.defaultQuality]);
 
   const handleFilesSelected = (files: SelectedFile[]) => {
     setSelectedFiles((prev) => [...prev, ...files]);
