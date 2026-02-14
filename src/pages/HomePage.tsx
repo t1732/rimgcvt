@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { Trash2 } from "lucide-react";
 
 import { ConversionActionBar } from "@/components/ConversionActionBar";
 import { DropZone, type SelectedFile } from "@/components/DropZone";
 import { FileItem } from "@/components/FileItem";
+import { Button } from "@/components/ui/button";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useFileStatusManager } from "@/hooks/use-file-status";
 import { canConvert } from "@/lib/image";
@@ -49,6 +51,15 @@ export const HomePage = () => {
   };
 
   const handleReset = () => {
+    setSelectedFiles([]);
+    setIsComplete(false);
+  };
+
+  const handleRemoveFile = (filePath: string) => {
+    setSelectedFiles((prev) => prev.filter((file) => file.path !== filePath));
+  };
+
+  const handleClearAll = () => {
     setSelectedFiles([]);
     setIsComplete(false);
   };
@@ -154,6 +165,17 @@ export const HomePage = () => {
               <h3 className="text-lg font-semibold">
                 Selected Files ({selectedFiles.length})
               </h3>
+              {!isConverting && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearAll}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear All
+                </Button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 gap-2">
@@ -162,6 +184,11 @@ export const HomePage = () => {
                   key={`${file.path}-${i}`}
                   file={file}
                   targetFormat={targetFormat}
+                  onRemove={
+                    !isConverting
+                      ? () => handleRemoveFile(file.path)
+                      : undefined
+                  }
                 />
               ))}
             </div>

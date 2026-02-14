@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, Trash2, XCircle } from "lucide-react";
 
 import { normalizeFilePathForAsset } from "@/lib/file-utils";
 import { isSameFormat as checkIsSameFormat } from "@/lib/image";
@@ -30,9 +30,10 @@ const getFileItemStyles = (
 interface FileItemProps {
   file: SelectedFile;
   targetFormat: string;
+  onRemove?: () => void;
 }
 
-export const FileItem = ({ file, targetFormat }: FileItemProps) => {
+export const FileItem = ({ file, targetFormat, onRemove }: FileItemProps) => {
   const itemRef = useRef<HTMLDivElement>(null);
   const thumbnail = convertFileSrc(normalizeFilePathForAsset(file.path));
   const isSameFormat = checkIsSameFormat(file.name, targetFormat);
@@ -129,6 +130,16 @@ export const FileItem = ({ file, targetFormat }: FileItemProps) => {
           <span className="text-[10px] font-bold text-sushi-600 animate-pulse uppercase tracking-wider">
             Processing...
           </span>
+        )}
+        {onRemove && !file.status && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="p-1.5 rounded-md hover:bg-destructive/10 transition-colors group"
+            aria-label="Remove file"
+          >
+            <Trash2 className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
+          </button>
         )}
       </div>
     </div>
