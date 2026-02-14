@@ -7,5 +7,8 @@
   "css.lint.unknownAtRules": "ignore",
   "files.associations": {
     "*.css": "tailwindcss"
+  },
+  "chat.tools.terminal.autoApprove": {
+    "bun": true
   }
 }
