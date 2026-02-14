@@ -38,7 +38,7 @@ export const HomePage = () => {
   }, [settings.defaultQuality]);
 
   const handleFilesSelected = (files: SelectedFile[]) => {
-    setSelectedFiles((prev) => [...prev, ...files]);
+    setSelectedFiles((prev) => (isComplete ? [...files] : [...prev, ...files]));
     setIsComplete(false);
   };
 
