@@ -13,6 +13,7 @@ export const isSameFormat = (filename: string, targetFormat: string) => {
   return extension === normalizedTarget;
 };
 
-export const canConvert = (file: SelectedFile, targetFormat: string) => {
-  return !isSameFormat(file.name, targetFormat);
+// Allow conversion even for same format files (for lossy compression adjustment)
+export const canConvert = (_file: SelectedFile, _targetFormat: string) => {
+  return true;
 };

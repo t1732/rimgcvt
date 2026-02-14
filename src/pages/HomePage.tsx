@@ -211,7 +211,6 @@ export const HomePage = () => {
                 <FileItem
                   key={`${file.path}-${i}`}
                   file={file}
-                  targetFormat={targetFormat}
                   onRemove={
                     !isConverting
                       ? () => handleRemoveFile(file.path)
