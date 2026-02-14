@@ -151,7 +151,7 @@ rimgcvt/
 - **AppSidebar** (`src/components/AppSidebar.tsx`)
   - ホームと設定ページのサイドバーナビゲーション
   - アクティブページのハイライト
-  - アプリロゴ付きブランドヘッダー（IMGCVT）
+  - アプリロゴ付きブランドヘッダー（RIMGCVT）
 
 - **Appコンポーネント** (`src/App.tsx`)
   - シンプルなページ切り替えナビゲーション（ルーターなし）

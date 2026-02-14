@@ -270,7 +270,7 @@ export const LicensePage = () => {
 
         <div className="pt-8 text-center text-xs text-muted-foreground">
           <p>This application also uses many other open source libraries.</p>
-          <p className="mt-1">© 2026 IMGCVT Contributors</p>
+          <p className="mt-1">© 2026 RIMGCVT Contributors</p>
           {version && <p className="mt-1">Version {version}</p>}
         </div>
       </div>

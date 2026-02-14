@@ -34,7 +34,7 @@ export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sushi-600 text-primary-foreground">
             <ImageIcon className="h-4 w-4" />
           </div>
-          <span className="text-xl font-bold">IMGCVT</span>
+          <span className="text-xl font-bold">RIMGCVT</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
