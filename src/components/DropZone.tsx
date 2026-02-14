@@ -9,6 +9,29 @@ import { cn } from "@/lib/utils";
 
 export type FileStatus = "idle" | "converting" | "success" | "error";
 
+interface DragDropPayload {
+  type: "over" | "drop" | "cancel";
+  paths?: string[];
+}
+
+/**
+ * Normalize Tauri drag-drop event structure across different versions/platforms
+ */
+const normalizeDragDropEvent = (event: unknown): DragDropPayload => {
+  const eventObj = event as {
+    payload?: { type?: string; paths?: string[] };
+    type?: string;
+    paths?: string[];
+  };
+
+  const payload = eventObj.payload ?? eventObj;
+
+  return {
+    type: (payload.type as DragDropPayload["type"]) || "cancel",
+    paths: payload.paths,
+  };
+};
+
 export interface SelectedFile {
   path: string;
   name: string;
@@ -61,12 +84,7 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
     const setupListeners = async () => {
       unlistenDragDrop = await getCurrentWindow().onDragDropEvent(
         async (event) => {
-          const normalized = ((
-            event as { payload?: { type?: string; paths?: string[] } }
-          ).payload ?? (event as { type?: string; paths?: string[] })) as {
-            type?: string;
-            paths?: string[];
-          };
+          const normalized = normalizeDragDropEvent(event);
 
           if (normalized.type === "over") {
             if (!disabledRef.current) {
