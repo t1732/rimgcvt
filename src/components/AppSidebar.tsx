@@ -64,7 +64,7 @@ export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
                 isActive={currentPage === "license"}
               >
                 <Scroll />
-                <span>License</span>
+                <span>Open Source Licenses</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
