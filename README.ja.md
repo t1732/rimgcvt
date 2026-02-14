@@ -93,6 +93,27 @@ npm run tauri build
 
 ビルド成果物は `src-tauri/target/release/bundle` に生成されます。
 
+### macOS から Windows へ交差ビルド (x86_64-pc-windows-msvc)
+
+macOS ホストから Windows 向けにビルドする際（`cargo-xwin` を利用）、`libwebp-sys` 等の C ソースが SIMD 命令（SSSE3 / SSE4.1 / AVX / AVX2）を必要とする場合があります。これらのターゲット機能がコンパイラに渡されないと「requires target feature 'ssse3'」のようなエラーが発生します。
+
+対処法として、ビルド前に `TARGET_CFLAGS` 環境変数を設定して CPU 機能を有効にする方法が動作します（zsh/bash の例）：
+
+```bash
+export TARGET_CFLAGS="-mssse3 -msse4.1 -mavx -mavx2"
+tauri build --runner cargo-xwin --target "x86_64-pc-windows-msvc"
+```
+
+もし `clang-cl` がこれらのフラグを受け付けない場合は、クロスコンパイラとして `clang` を指定して試してください：
+
+```bash
+export CC_x86_64_pc_windows_msvc=clang
+export TARGET_CFLAGS="-mssse3 -msse4.1 -mavx -mavx2"
+tauri build --runner cargo-xwin --target "x86_64-pc-windows-msvc"
+```
+
+この手順は、macOS から `x86_64-pc-windows-msvc` へ交差ビルドする際の「always_inline ... requires target feature」系のコンパイルエラーを解消するために検証済みです。
+
 ## 推奨 IDE セットアップ (Recommended IDE Setup)
 
 - [VS Code](https://code.visualstudio.com/)

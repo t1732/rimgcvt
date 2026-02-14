@@ -93,6 +93,27 @@ npm run tauri build
 
 The build artifacts will be available in `src-tauri/target/release/bundle`.
 
+### Cross-building from macOS to Windows (x86_64-pc-windows-msvc)
+
+If you build for Windows from macOS (using `cargo-xwin` / `cargo-xwin` runner), some C sources (e.g. `libwebp-sys`) require SIMD features (SSSE3 / SSE4.1 / AVX / AVX2). When those target features are not passed to the compiler you may see errors like "requires target feature 'ssse3'".
+
+A working approach is to set `TARGET_CFLAGS` to enable the CPU features before running the build. Example (zsh/bash):
+
+```bash
+export TARGET_CFLAGS="-mssse3 -msse4.1 -mavx -mavx2"
+tauri build --runner cargo-xwin --target "x86_64-pc-windows-msvc"
+```
+
+If `clang-cl` rejects those flags, try using `clang` as the cross-compiler wrapper:
+
+```bash
+export CC_x86_64_pc_windows_msvc=clang
+export TARGET_CFLAGS="-mssse3 -msse4.1 -mavx -mavx2"
+tauri build --runner cargo-xwin --target "x86_64-pc-windows-msvc"
+```
+
+These commands were verified on macOS for this repository to address "always_inline ... requires target feature" compile errors when cross-compiling to `x86_64-pc-windows-msvc`.
+
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/)
