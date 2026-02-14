@@ -5,14 +5,26 @@ import type { SelectedFile } from "@/components/DropZone";
 /**
  * Resolve file paths to SelectedFile objects with metadata
  */
+const SUPPORTED_IMAGE_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
 export const resolvePathsToFiles = async (
   paths: string[],
 ): Promise<SelectedFile[]> => {
-  const files: SelectedFile[] = await Promise.all(
+  const files = await Promise.all(
     paths.map(async (path) => {
       const metadata = (await invoke("get_file_metadata", {
         path,
-      }).catch(() => ({ size: 0 }))) as { size: number };
+      }).catch(() => ({ size: 0, mime_type: "" }))) as {
+        size: number;
+        mime_type: string;
+      };
+      if (!SUPPORTED_IMAGE_MIME_TYPES.has(metadata.mime_type)) {
+        return null;
+      }
       return {
         path,
         name: path.split(/[/\\]/).pop() || "",
@@ -21,7 +33,7 @@ export const resolvePathsToFiles = async (
     }),
   );
 
-  return files;
+  return files.filter((file): file is SelectedFile => file !== null);
 };
 
 const isWindowsDrivePath = (path: string) => /^\/[A-Za-z]:\//.test(path);

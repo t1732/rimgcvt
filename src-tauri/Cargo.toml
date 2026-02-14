@@ -27,4 +27,5 @@ image = { version = "0.25.9", features = ["jpeg", "png"] }
 anyhow = "1.0.101"
 webpx = "0.1.3"
 imagequant = "4.2"
+infer = "0.16"
 

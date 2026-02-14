@@ -1,6 +1,7 @@
 mod converter;
 
 use converter::{convert_image, ConversionResult, ConversionSettings};
+use std::io::Read;
 
 #[tauri::command]
 async fn convert_images(
@@ -33,13 +34,23 @@ async fn convert_images(
 #[derive(Debug, serde::Serialize)]
 struct FileMetadata {
     size: u64,
+    mime_type: String,
 }
 
 #[tauri::command]
 fn get_file_metadata(path: String) -> Result<FileMetadata, String> {
-    std::fs::metadata(path)
-        .map(|m| FileMetadata { size: m.len() })
-        .map_err(|e| e.to_string())
+    let metadata = std::fs::metadata(&path).map_err(|e| e.to_string())?;
+    let mut file = std::fs::File::open(&path).map_err(|e| e.to_string())?;
+    let mut buffer = [0u8; 8192];
+    let bytes_read = file.read(&mut buffer).map_err(|e| e.to_string())?;
+    let mime_type = infer::get(&buffer[..bytes_read])
+        .map(|kind| kind.mime_type().to_string())
+        .unwrap_or_else(|| "application/octet-stream".to_string());
+
+    Ok(FileMetadata {
+        size: metadata.len(),
+        mime_type,
+    })
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

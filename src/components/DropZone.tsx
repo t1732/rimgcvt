@@ -48,6 +48,12 @@ interface DropZoneProps {
 
 const SUPPORTED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 
+const isSupportedImagePath = (path: string) => {
+  const extension = path.split(".").pop()?.toLowerCase();
+  if (!extension) return false;
+  return SUPPORTED_IMAGE_EXTENSIONS.includes(extension);
+};
+
 export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const disabledRef = useRef(disabled ?? false);
@@ -89,14 +95,15 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
             const paths = Array.isArray(normalized.paths)
               ? normalized.paths
               : [];
-            if (paths.length === 0) return;
+            const imagePaths = paths.filter(isSupportedImagePath);
+            if (imagePaths.length === 0) return;
 
             // Prevent duplicate drop events
-            if (isDuplicate(paths)) {
+            if (isDuplicate(imagePaths)) {
               return;
             }
 
-            const files = await resolvePathsToFiles(paths);
+            const files = await resolvePathsToFiles(imagePaths);
             if (files.length > 0) {
               onFilesSelectedRef.current(files);
             }
@@ -147,7 +154,8 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
       });
 
       if (Array.isArray(selected)) {
-        const files = await resolvePathsToFiles(selected);
+        const imagePaths = selected.filter(isSupportedImagePath);
+        const files = await resolvePathsToFiles(imagePaths);
         onFilesSelected(files);
       }
     } catch (error) {
