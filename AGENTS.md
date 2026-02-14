@@ -7,15 +7,15 @@
 ## 技術スタック
 
 ### フロントエンド
-- **フレームワーク**: React 19.1.0
+- **フレームワーク**: React 19.2.0
 - **言語**: TypeScript 5.8.3
-- **ビルドツール**: Vite 7.0.4
+- **ビルドツール**: Vite 7.1.9
 - **スタイリング**: Tailwind CSS 4.1.18 with @tailwindcss/vite
 - **UIコンポーネント**: shadcn/ui (Radix UIプリミティブ)
 - **アイコン**: lucide-react 0.563.0
 
 ### バックエンド
-- **デスクトップフレームワーク**: Tauri v2
+- **デスクトップフレームワーク**: Tauri v2.10.2
 - **言語**: Rust (edition 2021)
 - **プラグイン**: tauri-plugin-opener, tauri-plugin-dialog
 
@@ -29,18 +29,22 @@
 rimgcvt/
 ├── src/                          # フロントエンドソースコード
 │   ├── components/               # Reactコンポーネント
-│   │   ├── ui/                   # shadcn/uiコンポーネント（10個）
+│   │   ├── ui/                   # shadcn/uiコンポーネント（13個）
 │   │   │   ├── button.tsx
 │   │   │   ├── card.tsx
 │   │   │   ├── input.tsx
 │   │   │   ├── label.tsx
+│   │   │   ├── popover.tsx
 │   │   │   ├── radio-group.tsx
+│   │   │   ├── select.tsx
 │   │   │   ├── separator.tsx
 │   │   │   ├── sheet.tsx
 │   │   │   ├── sidebar.tsx
 │   │   │   ├── skeleton.tsx
+│   │   │   ├── slider.tsx
 │   │   │   └── tooltip.tsx
 │   │   ├── AppSidebar.tsx        # アプリケーションナビゲーションサイドバー
+│   │   ├── ConversionActionBar.tsx # 変換アクションバー
 │   │   ├── DropZone.tsx          # ドラッグ&ドロップファイルアップロードコンポーネント
 │   │   ├── FileItem.tsx          # サムネイル付きファイルリストアイテム
 │   │   └── Header.tsx            # アプリケーションヘッダー
@@ -49,16 +53,23 @@ rimgcvt/
 │   │   └── ThemeProvider.tsx     # テーマ管理（light/dark/system）
 │   ├── pages/                    # ページコンポーネント
 │   │   ├── HomePage.tsx          # メイン変換インターフェース
+│   │   ├── LicensePage.tsx       # OSSライセンス一覧
 │   │   └── SettingsPage.tsx      # 設定画面
 │   ├── lib/                      # ユーティリティ関数
+│   │   ├── file-utils.ts         # ファイル解決ユーティリティ
+│   │   ├── image.ts              # 画像形式ユーティリティ
 │   │   └── utils.ts              # ユーティリティヘルパー（cnなど）
 │   ├── hooks/                    # カスタムReactフック
+│   │   ├── use-duplicate-drop-prevention.ts
+│   │   ├── use-file-status.ts
+│   │   └── use-mobile.ts
 │   ├── assets/                   # 静的アセット
 │   ├── App.tsx                   # ルートアプリケーションコンポーネント
 │   ├── main.tsx                  # アプリケーションエントリーポイント
 │   └── index.css                 # グローバルスタイルとTailwind設定
 ├── src-tauri/                    # Tauriバックエンド（Rust）
 │   ├── src/
+│   │   ├── converter.rs           # 画像変換ロジック
 │   │   ├── lib.rs                # メインTauriライブラリ
 │   │   └── main.rs               # アプリケーションエントリーポイント
 │   ├── Cargo.toml                # Rust依存関係
@@ -84,14 +95,19 @@ rimgcvt/
 - **DropZoneコンポーネント** (`src/components/DropZone.tsx`)
   - 画像ファイル用のドラッグ&ドロップインターフェース
   - 手動選択用のファイル入力ボタン
-  - 画像ファイルのみを受け入れるフィルター（`image/*`）
+  - JPG/PNG/WEBPの選択に対応
   - ドラッグ操作中の視覚的フィードバック
   - 複数ファイル選択のサポート
+  - 重複ドロップイベントの防止
 
 - **FileItemコンポーネント** (`src/components/FileItem.tsx`)
-  - `URL.createObjectURL`を使用したファイルサムネイル表示
+  - `convertFileSrc`を使用したファイルサムネイル表示
   - ファイル名とサイズ（KB単位）の表示
-  - アンマウント時のオブジェクトURLの自動クリーンアップ
+  - 変換中/成功/失敗のステータス表示
+
+- **ConversionActionBarコンポーネント** (`src/components/ConversionActionBar.tsx`)
+  - 変換開始、リセット、出力フォルダを開く操作
+  - 変換中/完了のステータス表示と品質の一時調整
 
 ### 2. 設定管理
 - **SettingsContext** (`src/contexts/SettingsContext.tsx`)
@@ -104,19 +120,22 @@ rimgcvt/
       outputPath: string
       filePrefix: string
       conflictResolution: "overwrite" | "numbering"
+      defaultQuality: number
     }
     ```
   - デフォルト値:
     - theme: `"system"`
-    - outputPath: `""`
+    - outputPath: `""`（初期化時にピクチャーディレクトリ配下へ自動設定）
     - filePrefix: `""`
     - conflictResolution: `"numbering"`
+    - defaultQuality: `85`
 
 - **SettingsPage** (`src/pages/SettingsPage.tsx`)
   - テーマ選択（light/dark/system）
   - 出力パス設定（Tauriフォルダ選択ダイアログ統合済）
   - 変換ファイル用のファイルプレフィックス入力
   - 競合解決戦略（上書き vs. 番号付け）
+  - 変換品質（デフォルト値）の設定
 
 ### 3. テーマシステム
 - **ThemeProvider** (`src/contexts/ThemeProvider.tsx`)
@@ -136,7 +155,7 @@ rimgcvt/
 
 - **Appコンポーネント** (`src/App.tsx`)
   - シンプルなページ切り替えナビゲーション（ルーターなし）
-  - ページ状態: `"home" | "settings"`
+  - ページ状態: `"home" | "settings" | "license"`
   - プロバイダー階層:
     ```
     SettingsProvider
@@ -146,16 +165,19 @@ rimgcvt/
     ```
 
 ### 5. UIコンポーネント（shadcn/ui）
-アプリケーションは10個のshadcn/uiコンポーネントを使用:
+アプリケーションは13個のshadcn/uiコンポーネントを使用:
 - `button` - インタラクティブボタン
 - `card` - コンテンツコンテナ
 - `input` - テキスト入力フィールド
 - `label` - フォームラベル
+- `popover` - ポップオーバー
 - `radio-group` - ラジオボタングループ
+- `select` - セレクトメニュー
 - `separator` - 視覚的な区切り線
 - `sheet` - モーダルシート
 - `sidebar` - ナビゲーションサイドバー
 - `skeleton` - ローディングプレースホルダー
+- `slider` - スライダー入力
 - `tooltip` - ホバーツールチップ
 
 ## 状態管理
@@ -172,7 +194,7 @@ rimgcvt/
    - 公開されたコンテキストなし（実装の詳細）
 
 ### ローカル状態
-- **HomePage**: `selectedFiles` - 選択されたFileオブジェクトの配列
+- **HomePage**: `selectedFiles`, `targetFormat`, `isConverting`, `isComplete`, `localQuality`
 - **DropZone**: `isDragging` - ドラッグ操作の状態
 - **FileItem**: `thumbnail` - ファイルプレビュー用のオブジェクトURL
 
@@ -180,13 +202,13 @@ rimgcvt/
 
 ### 現在の実装
 - **Rustバックエンド** (`src-tauri/src/lib.rs`)
-  - `tauri-plugin-opener`を使用した基本的なTauriセットアップ
-  - サンプル`greet`コマンド（フロントエンドでは未使用）
-  - macOSプライベートAPI有効化
+  - `tauri-plugin-dialog`と`tauri-plugin-opener`を使用
+  - 画像変換コマンド `convert_images` とメタデータ取得 `get_file_metadata`
 
-### 予定されている統合
-- フォルダー選択用のファイルダイアログ（tauri-plugin-dialog）
-- 画像変換コマンド（未実装）
+- **画像変換ロジック** (`src-tauri/src/converter.rs`)
+  - JPG/PNG/WEBPの変換
+  - 競合解決（上書き/番号付け）
+  - 品質パラメータを利用した圧縮
 
 ## 開発スクリプト
 
@@ -270,13 +292,13 @@ export function MyComponent({ prop1, prop2 }: MyComponentProps) {
    // 1. インポート
    import { useState } from "react";
    import { ExternalComponent } from "external-lib";
-   
+
    // 2. 型定義
    interface MyComponentProps {
      prop1: string;
      prop2: number;
    }
-   
+
    // 3. コンポーネント定義
    export const MyComponent = ({ prop1, prop2 }: MyComponentProps) => {
      // ロジック
@@ -292,14 +314,13 @@ export function MyComponent({ prop1, prop2 }: MyComponentProps) {
 
 5. **ツールの実行**
    - パッケージの実行には `npx` ではなく `bunx` を使用してください。
+  - 実装後は必ず `bun lint` と `bun lint:apply` を実行してください。
 
 ## 現在の制限事項 & TODO
 
-1. **ファイル変換**: 実際の画像変換ロジックはまだ実装されていません
-2. **ファイル操作**: ファイルシステム操作が実装されていません
-3. **エラーハンドリング**: ファイル操作の最小限のエラーハンドリング
-4. **バリデーション**: 設定の入力検証なし
-5. **テスト**: テストスイートが設定されていません
+1. **エラーハンドリング**: ファイル操作の最小限のエラーハンドリング
+2. **バリデーション**: 設定の入力検証なし
+3. **テスト**: テストスイートが設定されていません
 
 ## ファイル命名規則
 
