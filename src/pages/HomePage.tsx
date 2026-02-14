@@ -185,15 +185,21 @@ export const HomePage = () => {
 
       {/* Floating Bottom Action Bar Component */}
       <ConversionActionBar
-        isConverting={isConverting}
-        isComplete={isComplete}
-        convertibleCount={convertibleCount}
-        localQuality={localQuality}
-        setLocalQuality={setLocalQuality}
-        onStartConversion={handleStartConversion}
-        onReset={handleReset}
-        onOpenFolder={handleOpenFolder}
-        defaultQuality={settings.defaultQuality}
+        conversionState={{
+          isConverting,
+          isComplete,
+          convertibleCount,
+        }}
+        qualitySettings={{
+          localQuality,
+          defaultQuality: settings.defaultQuality,
+          setLocalQuality,
+        }}
+        actions={{
+          onStartConversion: handleStartConversion,
+          onReset: handleReset,
+          onOpenFolder: handleOpenFolder,
+        }}
       />
     </div>
   );

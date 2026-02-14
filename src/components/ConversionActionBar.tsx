@@ -22,29 +22,38 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-interface ConversionActionBarProps {
+interface ConversionState {
   isConverting: boolean;
   isComplete: boolean;
   convertibleCount: number;
+}
+
+interface QualitySettings {
   localQuality: number;
+  defaultQuality: number;
   setLocalQuality: (value: number) => void;
+}
+
+interface ConversionActions {
   onStartConversion: () => void;
   onReset: () => void;
   onOpenFolder: () => void;
-  defaultQuality: number;
+}
+
+interface ConversionActionBarProps {
+  conversionState: ConversionState;
+  qualitySettings: QualitySettings;
+  actions: ConversionActions;
 }
 
 export const ConversionActionBar = ({
-  isConverting,
-  isComplete,
-  convertibleCount,
-  localQuality,
-  setLocalQuality,
-  onStartConversion,
-  onReset,
-  onOpenFolder,
-  defaultQuality,
+  conversionState,
+  qualitySettings,
+  actions,
 }: ConversionActionBarProps) => {
+  const { isConverting, isComplete, convertibleCount } = conversionState;
+  const { localQuality, defaultQuality, setLocalQuality } = qualitySettings;
+  const { onStartConversion, onReset, onOpenFolder } = actions;
   const hasConvertibleFiles = convertibleCount > 0;
 
   if (!hasConvertibleFiles && !isComplete) return null;
