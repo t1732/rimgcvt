@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useFileStatusManager } from "@/hooks/use-file-status";
 import { canConvert } from "@/lib/image";
 
 interface ConversionResult {
@@ -28,6 +29,8 @@ export const HomePage = () => {
   const [isComplete, setIsComplete] = useState(false);
   const { settings } = useSettings();
   const [localQuality, setLocalQuality] = useState(settings.defaultQuality);
+  const { updateFileStatus, initializeConvertibleFiles } =
+    useFileStatusManager(setSelectedFiles);
 
   // Sync local quality with settings when default changes
   useEffect(() => {
@@ -69,11 +72,7 @@ export const HomePage = () => {
     setIsComplete(false);
 
     // Initialize status for all convertible files
-    setSelectedFiles((prev) =>
-      prev.map((f) =>
-        canConvert(f, targetFormat) ? { ...f, status: "idle" } : f,
-      ),
-    );
+    initializeConvertibleFiles(targetFormat, canConvert);
 
     try {
       const convertibleFiles = selectedFiles.filter((f) =>
@@ -84,11 +83,7 @@ export const HomePage = () => {
         const file = convertibleFiles[i];
 
         // Update status to converting
-        setSelectedFiles((prev) =>
-          prev.map((f) =>
-            f.path === file.path ? { ...f, status: "converting" } : f,
-          ),
-        );
+        updateFileStatus(file.path, "converting");
 
         try {
           // We use the same 'convert_images' but with a single path to reuse the backend
@@ -107,26 +102,14 @@ export const HomePage = () => {
           const result = results[0];
 
           // Update status based on result
-          setSelectedFiles((prev) =>
-            prev.map((f) =>
-              f.path === file.path
-                ? {
-                    ...f,
-                    status: result.success ? "success" : "error",
-                    error: result.error,
-                  }
-                : f,
-            ),
+          updateFileStatus(
+            file.path,
+            result.success ? "success" : "error",
+            result.error,
           );
         } catch (error) {
           console.error(`Failed to convert ${file.name}:`, error);
-          setSelectedFiles((prev) =>
-            prev.map((f) =>
-              f.path === file.path
-                ? { ...f, status: "error", error: String(error) }
-                : f,
-            ),
-          );
+          updateFileStatus(file.path, "error", String(error));
         }
       }
 
