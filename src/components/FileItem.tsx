@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 
+import { normalizeFilePathForAsset } from "@/lib/file-utils";
 import { isSameFormat as checkIsSameFormat } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +34,7 @@ interface FileItemProps {
 
 export const FileItem = ({ file, targetFormat }: FileItemProps) => {
   const itemRef = useRef<HTMLDivElement>(null);
-  const thumbnail = convertFileSrc(file.path);
+  const thumbnail = convertFileSrc(normalizeFilePathForAsset(file.path));
   const isSameFormat = checkIsSameFormat(file.name, targetFormat);
 
   useEffect(() => {

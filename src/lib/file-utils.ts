@@ -23,3 +23,34 @@ export const resolvePathsToFiles = async (
 
   return files;
 };
+
+const isWindowsDrivePath = (path: string) => /^\/[A-Za-z]:\//.test(path);
+
+/**
+ * Normalize file paths so convertFileSrc can load them on Windows (WebView2).
+ */
+export const normalizeFilePathForAsset = (path: string) => {
+  let normalized = path;
+
+  if (normalized.startsWith("file://")) {
+    try {
+      const parsed = new URL(normalized);
+      normalized = decodeURIComponent(parsed.pathname);
+      if (isWindowsDrivePath(normalized)) {
+        normalized = normalized.slice(1);
+      }
+    } catch {
+      normalized = normalized.replace(/^file:\/+/i, "");
+    }
+  }
+
+  if (normalized.startsWith("\\\\?\\")) {
+    if (normalized.startsWith("\\\\?\\UNC\\")) {
+      normalized = `\\\\${normalized.slice(8)}`;
+    } else {
+      normalized = normalized.slice(4);
+    }
+  }
+
+  return normalized.replace(/\\/g, "/");
+};
