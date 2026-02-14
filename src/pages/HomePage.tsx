@@ -204,7 +204,6 @@ export const HomePage = () => {
       <ConversionActionBar
         isConverting={isConverting}
         isComplete={isComplete}
-        targetFormat={targetFormat}
         convertibleCount={convertibleCount}
         localQuality={localQuality}
         setLocalQuality={setLocalQuality}
