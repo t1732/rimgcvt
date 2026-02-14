@@ -1,6 +1,8 @@
 mod converter;
+pub mod converters;
 
-use converter::{convert_image, ConversionResult, ConversionSettings};
+use converter::{convert_image, ConversionResult};
+use converters::ConversionSettings;
 use std::io::Read;
 
 #[tauri::command]
