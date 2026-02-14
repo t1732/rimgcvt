@@ -7,6 +7,25 @@ import { cn } from "@/lib/utils";
 
 import type { SelectedFile } from "./DropZone";
 
+/**
+ * Calculate container styles based on file state
+ */
+const getFileItemStyles = (
+  isSameFormat: boolean,
+  status?: FileStatus,
+): string => {
+  if (isSameFormat) {
+    return "bg-destructive/10 border-destructive/30 opacity-80";
+  }
+  if (status === "converting") {
+    return "bg-sushi-50 border-sushi-200 ring-1 ring-sushi-500/20";
+  }
+  if (status === "success") {
+    return "bg-sushi-50/30 border-sushi-200/50";
+  }
+  return "bg-muted/30 border-border opacity-100";
+};
+
 interface FileItemProps {
   file: SelectedFile;
   targetFormat: string;
@@ -31,13 +50,7 @@ export const FileItem = ({ file, targetFormat }: FileItemProps) => {
       ref={itemRef}
       className={cn(
         "flex items-center justify-between p-3 rounded-lg border transition-all duration-200",
-        isSameFormat
-          ? "bg-destructive/10 border-destructive/30 opacity-80"
-          : file.status === "converting"
-            ? "bg-sushi-50 border-sushi-200 ring-1 ring-sushi-500/20"
-            : file.status === "success"
-              ? "bg-sushi-50/30 border-sushi-200/50"
-              : "bg-muted/30 border-border opacity-100",
+        getFileItemStyles(isSameFormat, file.status),
       )}
     >
       <div className="flex items-center gap-3">
