@@ -8,8 +8,10 @@
 		"build": "tsc && vite build",
 		"preview": "vite preview",
 		"tauri": "tauri",
-		"lint": "biome check",
-		"lint:apply": "biome check --write"
+		"tauri:build": "tauri build",
+		"tauri:build:win": "TARGET_CFLAGS=\"-mssse3 -msse4.1 -mavx -mavx2\" tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc",
+		"lint": "biome check && cd src-tauri && cargo fmt -- --check",
+		"lint:apply": "biome check --write && cd src-tauri && cargo fmt"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.4",
