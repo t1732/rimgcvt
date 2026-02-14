@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Upload } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { useDuplicateDropPrevention } from "@/hooks/use-duplicate-drop-prevention";
+import { resolvePathsToFiles } from "@/lib/file-utils";
 import { cn } from "@/lib/utils";
 
 export type FileStatus = "idle" | "converting" | "success" | "error";
@@ -62,23 +62,6 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
     onFilesSelectedRef.current = onFilesSelected;
   }, [onFilesSelected]);
 
-  const resolvePathsToFiles = useCallback(async (paths: string[]) => {
-    const files: SelectedFile[] = await Promise.all(
-      paths.map(async (path) => {
-        const metadata = (await invoke("get_file_metadata", {
-          path,
-        }).catch(() => ({ size: 0 }))) as { size: number };
-        return {
-          path,
-          name: path.split(/[/\\]/).pop() || "",
-          size: metadata.size,
-        };
-      }),
-    );
-
-    return files;
-  }, []);
-
   useEffect(() => {
     let unlistenDragDrop: (() => void) | undefined;
 
@@ -127,7 +110,7 @@ export const DropZone = ({ onFilesSelected, disabled }: DropZoneProps) => {
     return () => {
       unlistenDragDrop?.();
     };
-  }, [resolvePathsToFiles]);
+  }, [isDuplicate]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
