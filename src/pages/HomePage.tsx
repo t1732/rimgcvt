@@ -169,33 +169,37 @@ export const HomePage = () => {
         )}
       </div>
 
-      {/* Spacer to prevent content from being hidden behind the floating bar */}
-      {(hasConvertibleFiles || isComplete) && (
-        <div className="h-32 w-full shrink-0" />
-      )}
+      {selectedFiles.length > 0 && (
+        <>
+          {/* Spacer to prevent content from being hidden behind the floating bar */}
+          {(hasConvertibleFiles || isComplete) && (
+            <div className="h-32 w-full shrink-0" />
+          )}
 
-      {/* Floating Bottom Action Bar Component */}
-      <ConversionActionBar
-        conversionState={{
-          isConverting,
-          isComplete,
-          convertibleCount,
-        }}
-        qualitySettings={{
-          localQuality,
-          defaultQuality: settings.defaultQuality,
-          setLocalQuality,
-        }}
-        formatSettings={{
-          targetFormat,
-          onTargetFormatChange: setTargetFormat,
-        }}
-        actions={{
-          onStartConversion: handleStartConversion,
-          onReset: handleReset,
-          onOpenFolder: handleOpenFolder,
-        }}
-      />
+          {/* Floating Bottom Action Bar Component */}
+          <ConversionActionBar
+            conversionState={{
+              isConverting,
+              isComplete,
+              convertibleCount,
+            }}
+            qualitySettings={{
+              localQuality,
+              defaultQuality: settings.defaultQuality,
+              setLocalQuality,
+            }}
+            formatSettings={{
+              targetFormat,
+              onTargetFormatChange: setTargetFormat,
+            }}
+            actions={{
+              onStartConversion: handleStartConversion,
+              onReset: handleReset,
+              onOpenFolder: handleOpenFolder,
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };
