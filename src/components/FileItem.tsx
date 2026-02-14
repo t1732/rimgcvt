@@ -5,7 +5,7 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { isSameFormat as checkIsSameFormat } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
-import type { SelectedFile } from "./DropZone";
+import type { FileStatus, SelectedFile } from "./DropZone";
 
 /**
  * Calculate container styles based on file state
