@@ -13,6 +13,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
@@ -44,19 +45,25 @@ interface ConversionActionBarProps {
   conversionState: ConversionState;
   qualitySettings: QualitySettings;
   actions: ConversionActions;
+  formatSettings: FormatSettings;
+}
+
+interface FormatSettings {
+  targetFormat: string;
+  onTargetFormatChange: (value: string) => void;
 }
 
 export const ConversionActionBar = ({
   conversionState,
   qualitySettings,
   actions,
+  formatSettings,
 }: ConversionActionBarProps) => {
   const { isConverting, isComplete, convertibleCount } = conversionState;
   const { localQuality, defaultQuality, setLocalQuality } = qualitySettings;
   const { onStartConversion, onReset, onOpenFolder } = actions;
+  const { targetFormat, onTargetFormatChange } = formatSettings;
   const hasConvertibleFiles = convertibleCount > 0;
-
-  if (!hasConvertibleFiles && !isComplete) return null;
 
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out">
@@ -69,6 +76,66 @@ export const ConversionActionBar = ({
             {isComplete ? "Completed" : `${convertibleCount} files`}
           </span>
         </div>
+
+        {!isComplete && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all group"
+              >
+                <div className="bg-primary/10 p-1.5 rounded-lg group-hover:bg-primary/20 transition-colors">
+                  <span className="text-[9px] font-bold text-primary uppercase tracking-wider">
+                    To
+                  </span>
+                </div>
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground">
+                    Convert
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-bold">
+                      {targetFormat.toUpperCase()}
+                    </span>
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </div>
+                </div>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-3 shadow-xl border-primary/20 backdrop-blur-lg bg-background/95">
+              <div className="space-y-3">
+                <span className="text-sm font-bold">Output format</span>
+                <RadioGroup
+                  value={targetFormat}
+                  onValueChange={onTargetFormatChange}
+                  className="gap-2"
+                >
+                  <label
+                    htmlFor="format-webp"
+                    className="flex items-center gap-2 rounded-md border border-transparent px-2 py-1.5 hover:border-primary/20 hover:bg-primary/5 transition-colors"
+                  >
+                    <RadioGroupItem id="format-webp" value="webp" />
+                    <span className="text-sm font-medium">WEBP</span>
+                  </label>
+                  <label
+                    htmlFor="format-png"
+                    className="flex items-center gap-2 rounded-md border border-transparent px-2 py-1.5 hover:border-primary/20 hover:bg-primary/5 transition-colors"
+                  >
+                    <RadioGroupItem id="format-png" value="png" />
+                    <span className="text-sm font-medium">PNG</span>
+                  </label>
+                  <label
+                    htmlFor="format-jpg"
+                    className="flex items-center gap-2 rounded-md border border-transparent px-2 py-1.5 hover:border-primary/20 hover:bg-primary/5 transition-colors"
+                  >
+                    <RadioGroupItem id="format-jpg" value="jpg" />
+                    <span className="text-sm font-medium">JPG</span>
+                  </label>
+                </RadioGroup>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
 
         {!isComplete && (
           <Popover>

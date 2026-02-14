@@ -4,13 +4,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { ConversionActionBar } from "@/components/ConversionActionBar";
 import { DropZone, type SelectedFile } from "@/components/DropZone";
 import { FileItem } from "@/components/FileItem";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useFileStatusManager } from "@/hooks/use-file-status";
 import { canConvert } from "@/lib/image";
@@ -148,21 +141,6 @@ export const HomePage = () => {
               <h3 className="text-lg font-semibold">
                 Selected Files ({selectedFiles.length})
               </h3>
-              <div className="flex items-center gap-3 bg-muted/50 p-1.5 px-3 rounded-lg border">
-                <span className="text-sm font-medium text-muted-foreground">
-                  Convert to
-                </span>
-                <Select value={targetFormat} onValueChange={setTargetFormat}>
-                  <SelectTrigger className="w-[110px] h-9 bg-background">
-                    <SelectValue placeholder="Format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="webp">WEBP</SelectItem>
-                    <SelectItem value="png">PNG</SelectItem>
-                    <SelectItem value="jpg">JPG</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-2">
@@ -194,6 +172,10 @@ export const HomePage = () => {
           localQuality,
           defaultQuality: settings.defaultQuality,
           setLocalQuality,
+        }}
+        formatSettings={{
+          targetFormat,
+          onTargetFormatChange: setTargetFormat,
         }}
         actions={{
           onStartConversion: handleStartConversion,
