@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { Home, Image as ImageIcon, Scroll, Settings } from "lucide-react";
+import { Home, Scroll, Settings } from "lucide-react";
 
+import logoImage from "@/assets/logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -31,8 +32,8 @@ export const AppSidebar = ({ onNavigate, currentPage }: AppSidebarProps) => {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sushi-600 text-primary-foreground">
-            <ImageIcon className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center">
+            <img src={logoImage} alt="RIMGCVT" className="h-8 w-8 rounded-lg" />
           </div>
           <span className="text-xl font-bold">RIMGCVT</span>
         </div>
