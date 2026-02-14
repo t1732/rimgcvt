@@ -88,6 +88,21 @@ export const HomePage = () => {
   const hasConvertibleFiles = selectedFiles.some((file) =>
     canConvert(file, targetFormat),
   );
+  const convertibleCount = selectedFiles.filter((f) =>
+    canConvert(f, targetFormat),
+  ).length;
+  const completedConvertibleCount = selectedFiles.filter(
+    (f) =>
+      canConvert(f, targetFormat) &&
+      (f.status === "success" || f.status === "error"),
+  ).length;
+  const progressPercent =
+    convertibleCount > 0
+      ? Math.min(
+          100,
+          Math.round((completedConvertibleCount / convertibleCount) * 100),
+        )
+      : 0;
 
   const handleStartConversion = async () => {
     if (isConverting) return;
@@ -145,10 +160,6 @@ export const HomePage = () => {
       setIsConverting(false);
     }
   };
-
-  const convertibleCount = selectedFiles.filter((f) =>
-    canConvert(f, targetFormat),
-  ).length;
 
   const hasFiles = selectedFiles.length > 0;
 
@@ -226,6 +237,8 @@ export const HomePage = () => {
               isConverting,
               isComplete,
               convertibleCount,
+              completedConvertibleCount,
+              progressPercent,
             }}
             qualitySettings={{
               localQuality,

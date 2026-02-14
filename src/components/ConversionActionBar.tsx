@@ -27,6 +27,8 @@ interface ConversionState {
   isConverting: boolean;
   isComplete: boolean;
   convertibleCount: number;
+  completedConvertibleCount: number;
+  progressPercent: number;
 }
 
 interface QualitySettings {
@@ -61,7 +63,13 @@ export const ConversionActionBar = ({
   actions,
   formatSettings,
 }: ConversionActionBarProps) => {
-  const { isConverting, isComplete, convertibleCount } = conversionState;
+  const {
+    isConverting,
+    isComplete,
+    convertibleCount,
+    completedConvertibleCount,
+    progressPercent,
+  } = conversionState;
   const {
     localQuality,
     defaultQuality,
@@ -107,6 +115,20 @@ export const ConversionActionBar = ({
           <span className="text-sm font-semibold leading-none">
             {isComplete ? "Completed" : `${convertibleCount} files`}
           </span>
+          {isConverting && hasConvertibleFiles && (
+            <div className="mt-2 w-36">
+              <div className="h-1.5 w-full rounded-full bg-muted/60 overflow-hidden">
+                <div
+                  className="h-full bg-sushi-500 transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <div className="mt-1 text-[10px] text-muted-foreground font-semibold">
+                {completedConvertibleCount}/{convertibleCount} (
+                {progressPercent}%)
+              </div>
+            </div>
+          )}
         </div>
 
         {!isComplete && (
