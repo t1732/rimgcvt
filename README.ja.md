@@ -49,9 +49,15 @@
 - **Node.js** (または [Bun](https://bun.sh/))
 - **Rust** & Cargo ([rustup](https://rustup.rs/) 経由でインストール)
 - Tauri の **システム依存関係** ([Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites) を参照)
-- **libheif** (HEIC/HEIF サポートに必要):
-  - **macOS**: `brew install libheif`
-  - **Ubuntu/Debian**: `sudo apt install libheif-dev`
+- **画像フォーマットライブラリ** (HEIC/HEIF および AVIF サポートに必要):
+  - **macOS**: 
+    ```bash
+    brew install libheif libavif meson ninja cmake
+    ```
+  - **Ubuntu/Debian**: 
+    ```bash
+    sudo apt install libheif-dev libavif-dev meson ninja-build cmake
+    ```
   - **Windows**: GitHub Actions CI/CD で vcpkg 経由で自動処理
 
 ### インストール (Installation)

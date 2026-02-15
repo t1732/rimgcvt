@@ -49,9 +49,15 @@ Ensure you have the following installed on your machine:
 - **Node.js** (or [Bun](https://bun.sh/))
 - **Rust** & Cargo (Install via [rustup](https://rustup.rs/))
 - **System Dependencies** for Tauri (see [Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
-- **libheif** (required for HEIC/HEIF support):
-  - **macOS**: `brew install libheif`
-  - **Ubuntu/Debian**: `sudo apt install libheif-dev`
+- **Image Format Libraries** (required for HEIC/HEIF and AVIF support):
+  - **macOS**: 
+    ```bash
+    brew install libheif libavif meson ninja cmake
+    ```
+  - **Ubuntu/Debian**: 
+    ```bash
+    sudo apt install libheif-dev libavif-dev meson ninja-build cmake
+    ```
   - **Windows**: Automatically handled via vcpkg in GitHub Actions CI/CD
 
 ### Installation
