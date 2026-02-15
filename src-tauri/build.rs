@@ -1,17 +1,26 @@
 fn main() {
-    // Configure libheif for static linking on Windows
+    // Configure libheif for Windows
     #[cfg(target_os = "windows")]
     {
-        println!("cargo:rustc-env=LIBHEIF_STATIC=1");
+        // Try VCPKG_ROOT first, then VCPKG_INSTALLATION_ROOT (set by ilammy/msvc-dev-cmd)
+        let vcpkg_root = std::env::var("VCPKG_ROOT")
+            .or_else(|_| std::env::var("VCPKG_INSTALLATION_ROOT"))
+            .unwrap_or_default();
 
-        // Windows native build paths (vcpkg, msys2, etc.)
-        if let Ok(vcpkg_root) = std::env::var("VCPKG_ROOT") {
-            println!("cargo:rustc-link-search=native={}/lib", vcpkg_root);
+        if !vcpkg_root.is_empty() {
+            println!(
+                "cargo:rustc-link-search=native={}/installed/x64-windows/lib",
+                vcpkg_root
+            );
+            println!(
+                "cargo:rustc-link-search=native={}/installed/x64-windows-static/lib",
+                vcpkg_root
+            );
+        } else {
+            // Fallback for local development
+            println!("cargo:rustc-link-search=native=C:/vcpkg/installed/x64-windows/lib");
+            println!("cargo:rustc-link-search=native=C:/Program Files/libheif/lib");
         }
-
-        // Fallback paths for common Windows build environments
-        println!("cargo:rustc-link-search=native=C:/vcpkg/installed/x64-windows/lib");
-        println!("cargo:rustc-link-search=native=C:/Program Files/libheif/lib");
     }
 
     tauri_build::build()
