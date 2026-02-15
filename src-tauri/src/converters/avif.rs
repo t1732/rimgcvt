@@ -14,23 +14,23 @@ pub fn convert_to_avif<W: Write>(
     mut writer: W,
     settings: &ConversionSettings,
 ) -> anyhow::Result<()> {
-    // AVIF encoding through image crate
-    // Note: The image crate's AVIF encoder uses ravif internally
-    // AVIF encoder requires Seek, so we encode to a buffer first
+    // Use libavif-image for encoding with quality/lossless control
+    // libavif-image wraps ravif and provides more control over encoding parameters
 
-    let mut buffer = std::io::Cursor::new(Vec::new());
-
-    if settings.lossless {
-        // For lossless encoding, use maximum quality
-        img.write_to(&mut buffer, image::ImageFormat::Avif)?;
+    // Configure encoder based on settings
+    let quality = if settings.lossless {
+        // For lossless, use maximum quality (100)
+        100
     } else {
-        // For lossy encoding, we need to use the avif encoder with quality settings
-        // The image crate doesn't directly expose quality control for AVIF yet,
-        // so we'll use the default encoding for now
-        // TODO: Implement quality control when ravif API is exposed through image crate
-        img.write_to(&mut buffer, image::ImageFormat::Avif)?;
-    }
+        // Map quality from 1-100 to ravif's expected range
+        settings.quality.max(1).min(100)
+    };
 
-    writer.write_all(buffer.get_ref())?;
+    // Encode using libavif-image
+    // The quality parameter controls the encoding quality
+    // Higher values = better quality but larger file size
+    let encoded = libavif_image::write(img, quality as i32)?;
+
+    writer.write_all(&encoded)?;
     Ok(())
 }

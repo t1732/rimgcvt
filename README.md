@@ -14,8 +14,8 @@ A modern, fast, and lightweight image converter application built with [Tauri](h
   - **Input**: JPG, PNG, WEBP, AVIF, HEIC/HEIF
   - **Output**: JPG, PNG, WEBP, AVIF, HEIC
 - **Quality Control**:
-  - Adjustable compression quality (0-100).
-  - Lossless compression support for PNG, WEBP, AVIF.
+  - Adjustable compression quality (1-100) for supported formats.
+  - Lossless compression support for PNG, WEBP, and AVIF.
 - **Customizable Settings**:
   - Set default output directory.
   - File naming customization (prefix, conflict resolution).

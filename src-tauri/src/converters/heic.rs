@@ -1,6 +1,16 @@
 use super::ConversionSettings;
 use image::DynamicImage;
 use std::io::Write;
+use std::path::PathBuf;
+
+/// RAII guard to ensure temp file cleanup
+struct TempFileGuard(PathBuf);
+
+impl Drop for TempFileGuard {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_file(&self.0);
+    }
+}
 
 /// Decode HEIC/HEIF file to DynamicImage
 pub fn heic_to_dynamic_image(source_path: &str) -> anyhow::Result<DynamicImage> {
@@ -121,12 +131,8 @@ pub fn convert_to_heic<W: Write>(
     // Create encoder and encode
     let lib_heif = libheif_rs::LibHeif::new();
 
-    // Choose encoder based on quality and lossless settings
-    let compression_format = if settings.lossless {
-        libheif_rs::CompressionFormat::Hevc
-    } else {
-        libheif_rs::CompressionFormat::Av1
-    };
+    // Always use HEVC for HEIC output; lossless only affects quality settings
+    let compression_format = libheif_rs::CompressionFormat::Hevc;
 
     let mut encoder = lib_heif
         .encoder_for_format(compression_format)
@@ -161,6 +167,9 @@ pub fn convert_to_heic<W: Write>(
             .as_nanos()
     ));
 
+    // Guard ensures cleanup on all exit paths (success or error)
+    let _guard = TempFileGuard(temp_path.clone());
+
     context
         .write_to_file(
             temp_path
@@ -172,9 +181,6 @@ pub fn convert_to_heic<W: Write>(
     // Read temp file and write to provided writer
     let temp_data = std::fs::read(&temp_path)
         .map_err(|e| anyhow::anyhow!("Failed to read temp HEIC file: {:?}", e))?;
-
-    // Clean up temp file
-    let _ = std::fs::remove_file(&temp_path);
 
     // Write data to output writer
     let mut w = writer;
