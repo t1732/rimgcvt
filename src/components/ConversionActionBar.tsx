@@ -81,9 +81,7 @@ export const ConversionActionBar = ({
   const { targetFormat, onTargetFormatChange } = formatSettings;
   const hasConvertibleFiles = convertibleCount > 0;
   const isLosslessDisabled = targetFormat === "jpg";
-  const isQualityControlDisabled = targetFormat === "avif";
-  const qualityLabel =
-    isLossless || isQualityControlDisabled ? "Lossless" : localQuality;
+  const qualityLabel = isLossless ? "Lossless" : localQuality;
   const losslessToggle = (
     <button
       type="button"
@@ -207,82 +205,69 @@ export const ConversionActionBar = ({
           </Popover>
         )}
 
-        {!isComplete &&
-          (isQualityControlDisabled ? (
-            <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-primary/10 opacity-60">
-              <div className="bg-primary/10 p-1.5 rounded-lg">
-                <Settings2 className="h-3.5 w-3.5 text-primary" />
-              </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground">
-                  Quality
-                </span>
-                <span className="text-sm font-bold">{qualityLabel}</span>
-              </div>
-            </div>
-          ) : (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all group"
-                >
-                  <div className="bg-primary/10 p-1.5 rounded-lg group-hover:bg-primary/20 transition-colors">
-                    <Settings2 className="h-3.5 w-3.5 text-primary" />
-                  </div>
-                  <div className="flex flex-col items-start leading-tight">
-                    <span className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground">
-                      Quality
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm font-bold">{qualityLabel}</span>
-                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                    </div>
-                  </div>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-4 shadow-xl border-primary/20 backdrop-blur-lg bg-background/95">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold">Lossless</span>
-                      {isLosslessDisabled ? (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              {losslessToggle}
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Lossless is not available for JPEG.</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ) : (
-                        losslessToggle
-                      )}
-                    </div>
-                    <span className="text-sm font-mono bg-muted px-2 py-0.5 rounded leading-none">
-                      {qualityLabel}
-                    </span>
-                  </div>
-                  <Slider
-                    min={1}
-                    max={100}
-                    step={1}
-                    value={[localQuality]}
-                    onValueChange={(value) => setLocalQuality(value[0])}
-                    className={cn("w-full", isLossless && "opacity-50")}
-                    disabled={isLossless}
-                  />
-                  <p className="text-[10px] text-muted-foreground leading-tight">
-                    {isLossless
-                      ? "Lossless conversion ignores the quality slider for this batch."
-                      : `Adjusting here applies only to this conversion batch. Default is ${defaultQuality}.`}
-                  </p>
+        {!isComplete && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all group"
+              >
+                <div className="bg-primary/10 p-1.5 rounded-lg group-hover:bg-primary/20 transition-colors">
+                  <Settings2 className="h-3.5 w-3.5 text-primary" />
                 </div>
-              </PopoverContent>
-            </Popover>
-          ))}
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-muted-foreground">
+                    Quality
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-bold">{qualityLabel}</span>
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </div>
+                </div>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-4 shadow-xl border-primary/20 backdrop-blur-lg bg-background/95">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">Lossless</span>
+                    {isLosslessDisabled ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            {losslessToggle}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Lossless is not available for JPEG.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      losslessToggle
+                    )}
+                  </div>
+                  <span className="text-sm font-mono bg-muted px-2 py-0.5 rounded leading-none">
+                    {qualityLabel}
+                  </span>
+                </div>
+                <Slider
+                  min={1}
+                  max={100}
+                  step={1}
+                  value={[localQuality]}
+                  onValueChange={(value) => setLocalQuality(value[0])}
+                  className={cn("w-full", isLossless && "opacity-50")}
+                  disabled={isLossless}
+                />
+                <p className="text-[10px] text-muted-foreground leading-tight">
+                  {isLossless
+                    ? "Lossless conversion ignores the quality slider for this batch."
+                    : `Adjusting here applies only to this conversion batch. Default is ${defaultQuality}.`}
+                </p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
 
         <Button
           size="lg"

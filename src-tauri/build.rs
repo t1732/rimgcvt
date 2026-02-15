@@ -2,6 +2,10 @@ fn main() {
     // Configure libheif and libavif for Windows
     #[cfg(target_os = "windows")]
     {
+        // Ensure rebuild when vcpkg environment variables change
+        println!("cargo:rerun-if-env-changed=VCPKG_ROOT");
+        println!("cargo:rerun-if-env-changed=VCPKG_INSTALLATION_ROOT");
+
         // Try VCPKG_ROOT first, then VCPKG_INSTALLATION_ROOT (set by ilammy/msvc-dev-cmd)
         let vcpkg_root = std::env::var("VCPKG_ROOT")
             .or_else(|_| std::env::var("VCPKG_INSTALLATION_ROOT"))
