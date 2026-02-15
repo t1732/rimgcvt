@@ -18,17 +18,17 @@ pub fn convert_image(
 ) -> anyhow::Result<String> {
     let source_path_buf = PathBuf::from(source_path);
 
-    // Handle HEIC input separately due to libheif requirement
-    let img = if source_path_buf
+    // Handle HEIC and AVIF input separately due to specific library requirements
+    let ext = source_path_buf
         .extension()
         .and_then(|s| s.to_str())
         .map(|s| s.to_lowercase())
-        .map(|s| s == "heic" || s == "heif")
-        .unwrap_or(false)
-    {
-        heic::heic_to_dynamic_image(source_path)?
-    } else {
-        image::open(&source_path_buf)?
+        .unwrap_or_default();
+
+    let img = match ext.as_str() {
+        "heic" | "heif" => heic::heic_to_dynamic_image(source_path)?,
+        "avif" => avif::avif_to_dynamic_image(source_path)?,
+        _ => image::open(&source_path_buf)?,
     };
 
     let stem = source_path_buf

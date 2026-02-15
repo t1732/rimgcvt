@@ -25,10 +25,10 @@ jobs:
       - name: Install MSVC and vcpkg
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install libheif via vcpkg
+      - name: Install libheif and libavif via vcpkg
         shell: pwsh
         run: |
-          vcpkg install libheif:x64-windows --clean-after-build
+          vcpkg install libheif:x64-windows libavif:x64-windows --clean-after-build
           vcpkg integrate install
 
       - name: Setup Bun

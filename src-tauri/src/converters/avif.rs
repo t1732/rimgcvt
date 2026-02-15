@@ -1,6 +1,13 @@
 use super::ConversionSettings;
 use image::DynamicImage;
 use std::io::Write;
+use std::path::Path;
+
+pub fn avif_to_dynamic_image(path: impl AsRef<Path>) -> anyhow::Result<DynamicImage> {
+    let data = std::fs::read(path)?;
+    let img = libavif_image::read(&data)?;
+    Ok(img)
+}
 
 pub fn convert_to_avif<W: Write>(
     img: &DynamicImage,
