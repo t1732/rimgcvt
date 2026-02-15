@@ -17,10 +17,6 @@ pub fn convert_to_avif<W: Write>(
     // Use libavif-image for encoding with quality/lossless control
     // libavif-image wraps ravif and provides more control over encoding parameters
 
-    // Convert DynamicImage to RGBA8 for libavif-image
-    let rgba = img.to_rgba8();
-    let (width, height) = rgba.dimensions();
-
     // Configure encoder based on settings
     let quality = if settings.lossless {
         // For lossless, use maximum quality (100)
@@ -33,7 +29,7 @@ pub fn convert_to_avif<W: Write>(
     // Encode using libavif-image
     // The quality parameter controls the encoding quality
     // Higher values = better quality but larger file size
-    let encoded = libavif_image::write(&image::DynamicImage::ImageRgba8(rgba), quality as i32)?;
+    let encoded = libavif_image::write(img, quality as i32)?;
 
     writer.write_all(&encoded)?;
     Ok(())
