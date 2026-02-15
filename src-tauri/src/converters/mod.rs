@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+pub mod avif;
 pub mod jpg;
 pub mod png;
 pub mod webp;

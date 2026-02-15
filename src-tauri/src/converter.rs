@@ -1,4 +1,4 @@
-use crate::converters::{jpg, png, webp, ConflictResolution, ConversionSettings};
+use crate::converters::{avif, jpg, png, webp, ConflictResolution, ConversionSettings};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -28,6 +28,7 @@ pub fn convert_image(
         "jpg" | "jpeg" => "jpg",
         "png" => "png",
         "webp" => "webp",
+        "avif" => "avif",
         _ => return Err(anyhow::anyhow!("Unsupported format: {}", target_format)),
     };
 
@@ -61,6 +62,9 @@ pub fn convert_image(
         }
         "png" => {
             png::convert_to_png(&img, writer, settings)?;
+        }
+        "avif" => {
+            avif::convert_to_avif(&img, writer, settings)?;
         }
         _ => unreachable!(),
     }
