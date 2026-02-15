@@ -82,19 +82,25 @@ export const ConversionActionBar = ({
   const hasConvertibleFiles = convertibleCount > 0;
   const qualityLabel = isLossless ? "Lossless" : localQuality;
   const isLosslessDisabled = targetFormat === "jpg";
+  const isQualityControlDisabled = targetFormat === "avif";
   const losslessToggle = (
     <button
       type="button"
       role="switch"
       aria-checked={isLossless}
-      aria-disabled={isLosslessDisabled}
-      onClick={() => !isLosslessDisabled && setIsLossless(!isLossless)}
+      aria-disabled={isLosslessDisabled || isQualityControlDisabled}
+      onClick={() =>
+        !isLosslessDisabled &&
+        !isQualityControlDisabled &&
+        setIsLossless(!isLossless)
+      }
       className={cn(
         "h-5 w-9 rounded-full border border-primary/20 transition-colors",
         isLossless ? "bg-sushi-500" : "bg-muted",
-        isLosslessDisabled && "opacity-50 cursor-not-allowed",
+        (isLosslessDisabled || isQualityControlDisabled) &&
+          "opacity-50 cursor-not-allowed",
       )}
-      disabled={isLosslessDisabled}
+      disabled={isLosslessDisabled || isQualityControlDisabled}
     >
       <span
         className={cn(
@@ -231,14 +237,18 @@ export const ConversionActionBar = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold">Lossless</span>
-                    {isLosslessDisabled ? (
+                    {isLosslessDisabled || isQualityControlDisabled ? (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             {losslessToggle}
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Lossless is not available for JPEG.</p>
+                            <p>
+                              {isLosslessDisabled
+                                ? "Lossless is not available for JPEG."
+                                : "AVIF quality control is not available yet."}
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -256,13 +266,18 @@ export const ConversionActionBar = ({
                   step={1}
                   value={[localQuality]}
                   onValueChange={(value) => setLocalQuality(value[0])}
-                  className={cn("w-full", isLossless && "opacity-50")}
-                  disabled={isLossless}
+                  className={cn(
+                    "w-full",
+                    (isLossless || isQualityControlDisabled) && "opacity-50",
+                  )}
+                  disabled={isLossless || isQualityControlDisabled}
                 />
                 <p className="text-[10px] text-muted-foreground leading-tight">
-                  {isLossless
-                    ? "Lossless conversion ignores the quality slider for this batch."
-                    : `Adjusting here applies only to this conversion batch. Default is ${defaultQuality}.`}
+                  {isQualityControlDisabled
+                    ? "AVIF format doesn't support quality control in this version. Default quality is used."
+                    : isLossless
+                      ? "Lossless conversion ignores the quality slider for this batch."
+                      : `Adjusting here applies only to this conversion batch. Default is ${defaultQuality}.`}
                 </p>
               </div>
             </PopoverContent>
