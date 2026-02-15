@@ -28,4 +28,4 @@ anyhow = "1.0.101"
 webpx = "0.1.3"
 imagequant = "4.2"
 infer = "0.16"
-libheif-rs = "1.0"
+libheif-rs = { version = "2.6", features = ["image", "latest"] }
