@@ -10,6 +10,8 @@ const SUPPORTED_IMAGE_MIME_TYPES = new Set([
   "image/png",
   "image/webp",
   "image/avif",
+  "image/heic",
+  "image/heif",
 ]);
 
 export const resolvePathsToFiles = async (

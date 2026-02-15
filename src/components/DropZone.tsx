@@ -47,7 +47,15 @@ interface DropZoneProps {
   hasFiles?: boolean;
 }
 
-const SUPPORTED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"];
+const SUPPORTED_IMAGE_EXTENSIONS = [
+  "jpg",
+  "jpeg",
+  "png",
+  "webp",
+  "avif",
+  "heic",
+  "heif",
+];
 
 const isSupportedImagePath = (path: string) => {
   const extension = path.split(".").pop()?.toLowerCase();

@@ -192,6 +192,13 @@ export const ConversionActionBar = ({
                     <RadioGroupItem id="format-avif" value="avif" />
                     <span className="text-sm font-medium">AVIF</span>
                   </label>
+                  <label
+                    htmlFor="format-heic"
+                    className="flex items-center gap-2 rounded-md border border-transparent px-2 py-1.5 hover:border-primary/20 hover:bg-primary/5 transition-colors"
+                  >
+                    <RadioGroupItem id="format-heic" value="heic" />
+                    <span className="text-sm font-medium">HEIC</span>
+                  </label>
                 </RadioGroup>
               </div>
             </PopoverContent>
