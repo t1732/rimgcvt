@@ -50,11 +50,11 @@
 - **Rust** & Cargo ([rustup](https://rustup.rs/) 経由でインストール)
 - Tauri の **システム依存関係** ([Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites) を参照)
 - **画像フォーマットライブラリ** (HEIC/HEIF および AVIF サポートに必要):
-  - **macOS**: 
+  - **macOS**:
     ```bash
     brew install libheif libavif meson ninja cmake
     ```
-  - **Ubuntu/Debian**: 
+  - **Ubuntu/Debian**:
     ```bash
     sudo apt install libheif-dev libavif-dev meson ninja-build cmake
     ```

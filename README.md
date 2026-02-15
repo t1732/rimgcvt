@@ -50,11 +50,11 @@ Ensure you have the following installed on your machine:
 - **Rust** & Cargo (Install via [rustup](https://rustup.rs/))
 - **System Dependencies** for Tauri (see [Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
 - **Image Format Libraries** (required for HEIC/HEIF and AVIF support):
-  - **macOS**: 
+  - **macOS**:
     ```bash
     brew install libheif libavif meson ninja cmake
     ```
-  - **Ubuntu/Debian**: 
+  - **Ubuntu/Debian**:
     ```bash
     sudo apt install libheif-dev libavif-dev meson ninja-build cmake
     ```
