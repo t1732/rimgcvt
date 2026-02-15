@@ -22,6 +22,15 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
+      - name: Install MSVC and vcpkg
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install libheif and libavif via vcpkg
+        shell: pwsh
+        run: |
+          vcpkg install libheif:x64-windows libavif:x64-windows --clean-after-build
+          vcpkg integrate install
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -48,6 +57,8 @@ jobs:
 
       - name: Build app
         run: bun run tauri build
+        env:
+          VCPKG_ROOT: ${{ env.VCPKG_INSTALLATION_ROOT }}
 
       - name: Compress Windows executable
         shell: pwsh

@@ -11,8 +11,11 @@
 - **高速変換**: Rust 製エンジンによる爆速画像処理。
 - **ドラッグ & ドロップ**: 直感的なドラッグ & ドロップエリアで簡単にファイルを選択。
 - **対応フォーマット**:
-  - **入力**: JPG, PNG, WEBP, HEIC
-  - **出力**: JPG, PNG, WEBP
+  - **入力**: JPG, PNG, WEBP, AVIF, HEIC/HEIF
+  - **出力**: JPG, PNG, WEBP, AVIF, HEIC
+- **品質制御**:
+  - 圧縮品質の調整（0〜100）。
+  - PNG、WEBP、AVIF でのロスレス圧縮サポート。
 - **カスタマイズ可能な設定**:
   - デフォルトの出力ディレクトリの設定。
   - ファイル名のカスタマイズ（接頭辞、競合時の解決方法）。
@@ -29,7 +32,10 @@
 - **バックエンド / コア**:
     - [Tauri](https://tauri.app/) (v2)
     - [Rust](https://www.rust-lang.org/)
-    - [image](https://github.com/image-rs/image) crate
+    - [image](https://github.com/image-rs/image) crate (AVIF サポート付き)
+    - [libheif-rs](https://github.com/Cykooz/libheif-rs) (HEIC/HEIF サポート)
+    - [webpx](https://crates.io/crates/webpx) (WebP エンコーディング)
+    - [imagequant](https://crates.io/crates/imagequant) (ロッシー PNG 圧縮)
 - **ビルドツール**:
     - [Vite](https://vitejs.dev/)
     - [Bun](https://bun.sh/) (Package Manager)
@@ -43,6 +49,16 @@
 - **Node.js** (または [Bun](https://bun.sh/))
 - **Rust** & Cargo ([rustup](https://rustup.rs/) 経由でインストール)
 - Tauri の **システム依存関係** ([Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites) を参照)
+- **画像フォーマットライブラリ** (HEIC/HEIF および AVIF サポートに必要):
+  - **macOS**:
+    ```bash
+    brew install libheif libavif meson ninja cmake
+    ```
+  - **Ubuntu/Debian**:
+    ```bash
+    sudo apt install libheif-dev libavif-dev meson ninja-build cmake
+    ```
+  - **Windows**: GitHub Actions CI/CD で vcpkg 経由で自動処理
 
 ### インストール (Installation)
 
@@ -77,9 +93,10 @@
 ## 使い方 (Usage)
 
 1. **画像を選択**: 画像をウィンドウにドラッグ & ドロップするか、クリックしてファイルを選択します。
-2. **フォーマットを選択**: 希望する出力フォーマット (JPG, PNG, WEBP) を選択します。
-3. **変換**: "Convert" ボタンをクリックして画像を処理します。
-4. **設定**: 設定メニューを使用して、出力パス、ファイル名の接頭辞、テーマを設定します。
+2. **フォーマットを選択**: 希望する出力フォーマット (JPG, PNG, WEBP, AVIF, HEIC) を選択します。
+3. **品質調整**: 品質スライダーで圧縮率を制御します（ロッシー形式に適用）。
+4. **変換**: "Convert" ボタンをクリックして画像を処理します。
+5. **設定**: 設定メニューから出力パス、ファイル名接頭辞、競合解決、テーマを設定します。
 
 ## 本番ビルド (Building for Production)
 

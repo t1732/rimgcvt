@@ -1,4 +1,4 @@
-use crate::converters::{jpg, png, webp, ConflictResolution, ConversionSettings};
+use crate::converters::{avif, heic, jpg, png, webp, ConflictResolution, ConversionSettings};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -17,7 +17,19 @@ pub fn convert_image(
     settings: &ConversionSettings,
 ) -> anyhow::Result<String> {
     let source_path_buf = PathBuf::from(source_path);
-    let img = image::open(&source_path_buf)?;
+
+    // Handle HEIC and AVIF input separately due to specific library requirements
+    let ext = source_path_buf
+        .extension()
+        .and_then(|s| s.to_str())
+        .map(|s| s.to_lowercase())
+        .unwrap_or_default();
+
+    let img = match ext.as_str() {
+        "heic" | "heif" => heic::heic_to_dynamic_image(source_path)?,
+        "avif" => avif::avif_to_dynamic_image(source_path)?,
+        _ => image::open(&source_path_buf)?,
+    };
 
     let stem = source_path_buf
         .file_stem()
@@ -28,6 +40,8 @@ pub fn convert_image(
         "jpg" | "jpeg" => "jpg",
         "png" => "png",
         "webp" => "webp",
+        "avif" => "avif",
+        "heic" | "heif" => "heic",
         _ => return Err(anyhow::anyhow!("Unsupported format: {}", target_format)),
     };
 
@@ -62,6 +76,10 @@ pub fn convert_image(
         "png" => {
             png::convert_to_png(&img, writer, settings)?;
         }
+        "avif" => {
+            avif::convert_to_avif(&img, writer, settings)?;
+        }
+        "heic" => heic::convert_to_heic(&img, writer, settings)?,
         _ => unreachable!(),
     }
 

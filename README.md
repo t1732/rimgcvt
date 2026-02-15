@@ -11,8 +11,11 @@ A modern, fast, and lightweight image converter application built with [Tauri](h
 - **High-Performance Conversion**: Powered by Rust for blazing fast image processing.
 - **Drag & Drop Interface**: Intuitive drag-and-drop area for easy file selection.
 - **Format Support**:
-  - **Input**: JPG, PNG, WEBP, HEIC
-  - **Output**: JPG, PNG, WEBP
+  - **Input**: JPG, PNG, WEBP, AVIF, HEIC/HEIF
+  - **Output**: JPG, PNG, WEBP, AVIF, HEIC
+- **Quality Control**:
+  - Adjustable compression quality (0-100).
+  - Lossless compression support for PNG, WEBP, AVIF.
 - **Customizable Settings**:
   - Set default output directory.
   - File naming customization (prefix, conflict resolution).
@@ -29,7 +32,10 @@ A modern, fast, and lightweight image converter application built with [Tauri](h
 - **Backend / Core**:
     - [Tauri](https://tauri.app/) (v2)
     - [Rust](https://www.rust-lang.org/)
-    - [image](https://github.com/image-rs/image) crate
+    - [image](https://github.com/image-rs/image) crate (with AVIF support)
+    - [libheif-rs](https://github.com/Cykooz/libheif-rs) (HEIC/HEIF support)
+    - [webpx](https://crates.io/crates/webpx) (WebP encoding)
+    - [imagequant](https://crates.io/crates/imagequant) (Lossy PNG compression)
 - **Build Tools**:
     - [Vite](https://vitejs.dev/)
     - [Bun](https://bun.sh/) (Package Manager)
@@ -43,6 +49,16 @@ Ensure you have the following installed on your machine:
 - **Node.js** (or [Bun](https://bun.sh/))
 - **Rust** & Cargo (Install via [rustup](https://rustup.rs/))
 - **System Dependencies** for Tauri (see [Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
+- **Image Format Libraries** (required for HEIC/HEIF and AVIF support):
+  - **macOS**:
+    ```bash
+    brew install libheif libavif meson ninja cmake
+    ```
+  - **Ubuntu/Debian**:
+    ```bash
+    sudo apt install libheif-dev libavif-dev meson ninja-build cmake
+    ```
+  - **Windows**: Automatically handled via vcpkg in GitHub Actions CI/CD
 
 ### Installation
 
@@ -77,9 +93,10 @@ This will start the Vite dev server and launch the Tauri application window.
 ## Usage
 
 1. **Select Images**: Drag and drop images onto the window or click to select files.
-2. **Choose Format**: Select the desired output format (JPG, PNG, WEBP).
-3. **Convert**: Click the "Convert" button to process the images.
-4. **Settings**: Use the settings menu to configure output paths, filename prefixes, and themes.
+2. **Choose Format**: Select the desired output format (JPG, PNG, WEBP, AVIF, HEIC).
+3. **Adjust Quality**: Use the quality slider to control compression (applies to lossy formats).
+4. **Convert**: Click the "Convert" button to process the images.
+5. **Settings**: Use the settings menu to configure output paths, filename prefixes, conflict resolution, and themes.
 
 ## Building for Production
 

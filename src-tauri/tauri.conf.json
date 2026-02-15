@@ -40,6 +40,13 @@
 			"icons/128x128@2x.png",
 			"icons/icon.icns",
 			"icons/icon.ico"
-		]
+		],
+		"windows": {
+			"wix": null,
+			"nsis": {
+				"installerIcon": "icons/icon.ico",
+				"headerImage": "icons/icon.ico"
+			}
+		}
 	}
 }

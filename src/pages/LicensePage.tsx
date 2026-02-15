@@ -132,6 +132,20 @@ const libraries: Library[] = [
     description: "Infer file type by checking magic bytes.",
   },
   {
+    name: "libheif-rs (Rust Crate)",
+    license: "MIT",
+    url: "https://github.com/Cykooz/libheif-rs",
+    description:
+      "Safe Rust wrapper for libheif, supporting HEIC/HEIF image format.",
+  },
+  {
+    name: "libavif-image (Rust Crate)",
+    license: "MIT / Apache-2.0",
+    url: "https://github.com/kornelski/libavif-image",
+    description:
+      "Safe Rust wrapper for libavif, supporting AVIF image decoding.",
+  },
+  {
     name: "anyhow (Rust Crate)",
     license: "MIT / Apache-2.0",
     url: "https://github.com/dtolnay/anyhow",
